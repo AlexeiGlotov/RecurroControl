@@ -1,0 +1,7 @@
+port : "8080"
+
+db:
+  login : "root"
+  port : "3333"
+  dbname : "bdsellers"
+  sslmode : "disable"
