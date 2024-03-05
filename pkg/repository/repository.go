@@ -6,21 +6,29 @@ import (
 	todo "RecurroControl"
 )
 
+const (
+	usersTable     = "users"
+	admissionTable = "reg_admission"
+)
+
 type Authorization interface {
 	CreateUser(user todo.User) (int, error)
 	GetUser(username, password string) (todo.User, error)
 }
 
-type TodoList interface {
+type Admission interface {
+	CreateKey(userID int) (string, error)
+	GetKey() ([]todo.RegAdmission, error)
 }
 
 type Repository struct {
 	Authorization
-	TodoList
+	Admission
 }
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthSql(db),
+		Admission:     NewAdmissionSql(db),
 	}
 }

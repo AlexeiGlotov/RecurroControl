@@ -25,10 +25,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api", h.userIdentity)
 	{
-		lists := api.Group("/lists")
+
+		admission := api.Group("/admission")
 		{
-			lists.POST("/", h.createList)
+			admission.POST("/", h.createKey)
+			admission.GET("/", h.getKey)
 		}
+
 	}
 
 	return router

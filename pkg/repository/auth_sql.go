@@ -7,10 +7,6 @@ import (
 	todo "RecurroControl"
 )
 
-const (
-	usersTable = "users"
-)
-
 type AuthSql struct {
 	db *sql.DB
 }

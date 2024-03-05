@@ -11,15 +11,19 @@ type Authorization interface {
 	ParseToken(token string) (int, error)
 }
 
-type TodoList interface {
+type Admission interface {
+	CreateKey(userID int) (string, error)
+	GetKey() ([]todo.RegAdmission, error)
 }
+
 type Service struct {
 	Authorization
-	TodoList
+	Admission
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		Admission:     NewAdmissionService(repos.Admission),
 	}
 }

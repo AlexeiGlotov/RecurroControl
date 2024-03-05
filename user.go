@@ -30,6 +30,13 @@ type User struct {
 	Owner         string `json:"owner" binding:"required"`
 }
 
+type RegAdmission struct {
+	Id         int     `json:"id" db:"id"`
+	Access_key string  `json:"access_key" db:"access_key"`
+	Owner      string  `json:"owner" db:"owner"`
+	IsLogin    *string `json:"isLogin" db:"isLogin"`
+}
+
 type StCheats struct {
 	Id       uint16         `json:"id"`
 	Name     string         `json:"name"`
