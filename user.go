@@ -30,6 +30,14 @@ type User struct {
 	Owner         string `json:"owner" binding:"required"`
 }
 
+type SignUpInput struct {
+	Login      string `json:"login" binding:"required"`
+	Password   string `json:"password" binding:"required"`
+	RePassword string `json:"repassword" binding:"required"`
+	Access_Key string `json:"access_key" binding:"required"`
+	Owner      string `json:"owner" binding:""`
+}
+
 type RegAdmission struct {
 	Id         int     `json:"id" db:"id"`
 	Access_key string  `json:"access_key" db:"access_key"`

@@ -21,6 +21,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/sign-in", h.signIn)
+		auth.POST("/check-admission-key", h.checkAdmissionKey)
 	}
 
 	api := router.Group("/api", h.userIdentity)
@@ -30,6 +31,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			admission.POST("/", h.createKey)
 			admission.GET("/", h.getKey)
+
 		}
 
 	}

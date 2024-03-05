@@ -12,8 +12,9 @@ const (
 )
 
 type Authorization interface {
-	CreateUser(user todo.User) (int, error)
+	CreateUser(user todo.SignUpInput) (int, error)
 	GetUser(username, password string) (todo.User, error)
+	CheckKeyAdmission(key string) (string, error)
 }
 
 type Admission interface {

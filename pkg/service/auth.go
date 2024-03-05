@@ -66,7 +66,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 	return token.SignedString([]byte(signinKey))
 }
 
-func (s *AuthService) CreateUser(user todo.User) (int, error) {
+func (s *AuthService) CreateUser(user todo.SignUpInput) (int, error) {
 	user.Password = genereatePasswordHash(user.Password)
 	return s.repo.CreateUser(user)
 }
@@ -74,4 +74,8 @@ func genereatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+}
+
+func (s *AuthService) CheckKeyAdmission(key string) (string, error) {
+	return s.repo.CheckKeyAdmission(key)
 }

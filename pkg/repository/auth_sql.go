@@ -15,7 +15,7 @@ func NewAuthSql(db *sql.DB) *AuthSql {
 	return &AuthSql{db: db}
 }
 
-func (a *AuthSql) CreateUser(user todo.User) (int, error) {
+func (a *AuthSql) CreateUser(user todo.SignUpInput) (int, error) {
 	var id int
 
 	query := fmt.Sprintf("INSERT INTO %s (login ,password,owner) values (?,?,?)", usersTable)
@@ -41,4 +41,17 @@ func (a *AuthSql) GetUser(username, password string) (todo.User, error) {
 	row := a.db.QueryRow(query, username, password).Scan(&user.Id)
 
 	return user, row
+}
+
+func (a *AuthSql) CheckKeyAdmission(key string) (string, error) {
+
+	var owner string
+	query := fmt.Sprintf("SELECT owner FROM %s WHERE access_key = ? and isLogin is NULL", admissionTable)
+
+	row := a.db.QueryRow(query, key)
+	if err := row.Scan(&owner); err != nil {
+		return "", err
+	}
+
+	return owner, nil
 }
