@@ -21,8 +21,9 @@ func NewAuthSql(db *sql.DB) *AuthSql {
 
 func (a *AuthSql) CreateUser(user todo.User) (int, error) {
 	var id int
-	query := fmt.Sprintf("INSERT INTO %s (login ,password) values (? ,?)", usersTable)
-	row := a.db.QueryRow(query, user.Login, user.Password)
+
+	query := fmt.Sprintf("INSERT INTO %s (login ,password,owner) values (?,?,?)", usersTable)
+	row := a.db.QueryRow(query, user.Login, user.Password, user.Owner)
 	if row.Err() != nil {
 		return 0, row.Err()
 	}

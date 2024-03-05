@@ -20,17 +20,14 @@ type StLicenseKeys struct {
 }
 
 type User struct {
-	Id           int            `json:"id" db:"id"`
-	Login        string         `json:"login" binding:"required"`
-	Password     string         `json:"password" binding:"required"`
-	Access_key   string         `json:"Access_key"`
-	Job          string         `json:"job"`
-	Status       int            `json:"status"`
-	Banned       int            `json:"banned"`
-	Cankeygen    int            `json:"cankeygen"`
-	Keygen       int            `json:"keygen"`
-	Keyactivated int            `json:"keyactivated"`
-	Owner        sql.NullString `json:"owner"`
+	Id            int    `json:"id" db:"id"`
+	Login         string `json:"login" binding:"required"`
+	Password      string `json:"password" binding:"required"`
+	Role          string `json:"role"`
+	KeysGenerated int    `json:"keys_generated"`
+	KeysActivated int    `json:"keys_activated"`
+	Banned        int    `json:"banned"`
+	Owner         string `json:"owner" binding:"required"`
 }
 
 type StCheats struct {
