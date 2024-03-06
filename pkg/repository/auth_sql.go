@@ -55,3 +55,16 @@ func (a *AuthSql) CheckKeyAdmission(key string) (string, error) {
 
 	return owner, nil
 }
+
+// Устанавливает логин , который использовал ключ
+func (a *AuthSql) SetLoginAdmission(login, key string) error {
+
+	query := fmt.Sprintf("UPDATE %s SET `isLogin`= ? WHERE access_key = ?", admissionTable)
+
+	row := a.db.QueryRow(query, login, key)
+	if row.Err() != nil {
+		return row.Err()
+	}
+
+	return nil
+}

@@ -15,6 +15,7 @@ type Authorization interface {
 	CreateUser(user todo.SignUpInput) (int, error)
 	GetUser(username, password string) (todo.User, error)
 	CheckKeyAdmission(key string) (string, error)
+	SetLoginAdmission(login, key string) error
 }
 
 type Admission interface {

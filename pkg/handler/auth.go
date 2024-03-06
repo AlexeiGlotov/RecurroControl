@@ -22,7 +22,6 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	// проверить что в таблице ключей есть такой ключ и вернуть owner
 	owner, err := h.services.CheckKeyAdmission(input.Access_Key)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -37,7 +36,11 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	// Запись новое значение в isLogin в таблицу ключей
+	err = h.services.Authorization.SetLoginAdmission(input.Login, input.Access_Key)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"id": id})
 }

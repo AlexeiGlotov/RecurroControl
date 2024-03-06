@@ -79,3 +79,7 @@ func genereatePasswordHash(password string) string {
 func (s *AuthService) CheckKeyAdmission(key string) (string, error) {
 	return s.repo.CheckKeyAdmission(key)
 }
+
+func (s *AuthService) SetLoginAdmission(login, key string) error {
+	return s.repo.SetLoginAdmission(login, key)
+}

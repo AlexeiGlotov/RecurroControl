@@ -10,6 +10,7 @@ type Authorization interface {
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
 	CheckKeyAdmission(key string) (string, error)
+	SetLoginAdmission(login, key string) error
 }
 
 type Admission interface {
