@@ -2,7 +2,7 @@ package service
 
 import (
 	todo "RecurroControl"
-	"RecurroControl/pkg/repository"
+	"RecurroControl/internal/repository"
 )
 
 type Authorization interface {

@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 
-	"RecurroControl/pkg/service"
+	"RecurroControl/internal/service"
 )
 
 type Handler struct {

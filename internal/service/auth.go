@@ -9,7 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 
 	todo "RecurroControl"
-	"RecurroControl/pkg/repository"
+	"RecurroControl/internal/repository"
 )
 
 const (

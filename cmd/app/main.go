@@ -8,9 +8,9 @@ import (
 	"github.com/subosito/gotenv"
 
 	todo "RecurroControl"
-	"RecurroControl/pkg/handler"
-	"RecurroControl/pkg/repository"
-	"RecurroControl/pkg/service"
+	"RecurroControl/internal/handler"
+	repository2 "RecurroControl/internal/repository"
+	"RecurroControl/internal/service"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 		logrus.Fatalf("error env %s", err.Error())
 	}
 
-	db, err := repository.NewMysqlDB(repository.Config{
+	db, err := repository2.NewMysqlDB(repository2.Config{
 		Host:     os.Getenv("DB_HOST"),
 		Password: os.Getenv("DB_PASSWORD"),
 		Port:     viper.GetString("db.port"),
@@ -36,7 +36,7 @@ func main() {
 		logrus.Fatalf("error mysql %s", err.Error())
 	}
 
-	repos := repository.NewRepository(db)
+	repos := repository2.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
