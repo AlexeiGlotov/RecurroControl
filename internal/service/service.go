@@ -8,7 +8,7 @@ import (
 type Authorization interface {
 	CreateUser(user todo.SignUpInput) (int, error)
 	GenerateToken(username, password string) (string, error)
-	ParseToken(token string) (int, error)
+	ParseToken(token string) (*todo.User, error)
 	CheckKeyAdmission(key string) (string, error)
 	SetLoginAdmission(login, key string) error
 }

@@ -36,9 +36,9 @@ func (a *AuthSql) CreateUser(user todo.SignUpInput) (int, error) {
 func (a *AuthSql) GetUser(username, password string) (todo.User, error) {
 	var user todo.User
 
-	query := fmt.Sprintf("SELECT id FROM %s WHERE login=? AND password=?", usersTable)
+	query := fmt.Sprintf("SELECT id,login,role,banned,owner FROM %s WHERE login=? AND password=?", usersTable)
 
-	row := a.db.QueryRow(query, username, password).Scan(&user.Id)
+	row := a.db.QueryRow(query, username, password).Scan(&user.Id, &user.Login, &user.Role, &user.Banned, &user.Owner)
 
 	return user, row
 }

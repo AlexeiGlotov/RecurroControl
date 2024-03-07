@@ -6,11 +6,13 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	todo "RecurroControl"
 )
 
 const (
 	authorizationHeader = "Authorization"
-	userCtx             = "userId"
+	userCtx             = "userInfo"
 )
 
 func (h *Handler) userIdentity(c *gin.Context) {
@@ -26,25 +28,25 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		return
 	}
 
-	userId, err := h.services.Authorization.ParseToken(headerParts[1])
+	user, err := h.services.Authorization.ParseToken(headerParts[1])
 	if err != nil {
 		newErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
-	c.Set(userCtx, userId)
+	c.Set(userCtx, user)
 }
 
-func getUserId(c *gin.Context) (int, error) {
-	id, ok := c.Get(userCtx)
+func getUserId(c *gin.Context) (*todo.User, error) {
+	user, ok := c.Get(userCtx)
 	if !ok {
 		newErrorResponse(c, http.StatusInternalServerError, "user id not found")
-		return 0, errors.New("user id not found")
+		return nil, errors.New("user id not found")
 	}
 
-	idInt, ok := id.(int)
+	stUser, ok := user.(*todo.User)
 	if !ok {
 		newErrorResponse(c, http.StatusInternalServerError, "user id is of invalid type")
-		return 0, errors.New("user id not found")
+		return nil, errors.New("user id not found")
 	}
-	return idInt, nil
+	return stUser, nil
 }
