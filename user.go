@@ -46,14 +46,8 @@ type RegAdmission struct {
 }
 
 type StCheats struct {
-	Id       uint16         `json:"id"`
-	Name     string         `json:"name"`
-	Secure   string         `json:"secure"`
-	Cangen   int            `json:"cangen"`
-	Procname sql.NullString `json:"procname"`
-	X64      sql.NullString `json:"x64"`
-	Path     sql.NullString `json:"path"`
-	Path2    sql.NullString `json:"path2"`
-	Dll      sql.NullString `json:"dll"`
-	Dlltest  sql.NullString `json:"dll_test"`
+	Id                uint16 `json:"id"`
+	Name              string `json:"name"`
+	Secure            string `json:"secure"`
+	IsAllowedGenerate int    `json:"isAllowedGenerate"`
 }

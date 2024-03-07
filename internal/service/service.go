@@ -18,14 +18,20 @@ type Admission interface {
 	GetKey() ([]todo.RegAdmission, error)
 }
 
+type Cheat interface {
+	GetCheats() ([]todo.StCheats, error)
+}
+
 type Service struct {
 	Authorization
 	Admission
+	Cheat
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		Admission:     NewAdmissionService(repos.Admission),
+		Cheat:         NewCheatService(repos.Cheat),
 	}
 }

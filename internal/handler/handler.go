@@ -26,14 +26,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api", h.userIdentity)
 	{
-
 		admission := api.Group("/admission")
 		{
 			admission.POST("/", h.createKey)
 			admission.GET("/", h.getKey)
-
 		}
 
+		cheats := api.Group("/cheats")
+		{
+			cheats.GET("/", h.getCheat)
+		}
 	}
 
 	return router

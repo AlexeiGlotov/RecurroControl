@@ -9,6 +9,7 @@ import (
 const (
 	usersTable     = "users"
 	admissionTable = "reg_admission"
+	cheatTable     = "cheats"
 )
 
 type Authorization interface {
@@ -23,14 +24,20 @@ type Admission interface {
 	GetKey() ([]todo.RegAdmission, error)
 }
 
+type Cheat interface {
+	GetCheats() ([]todo.StCheats, error)
+}
+
 type Repository struct {
 	Authorization
 	Admission
+	Cheat
 }
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthSql(db),
 		Admission:     NewAdmissionSql(db),
+		Cheat:         NewCheatSql(db),
 	}
 }
