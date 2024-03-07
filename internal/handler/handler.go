@@ -36,6 +36,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			cheats.GET("/", h.getCheat)
 		}
+
+		users := api.Group("/users")
+		{
+			users.GET("/", h.getUsers)
+		}
 	}
 
 	return router

@@ -6,10 +6,10 @@ import (
 )
 
 type CheatService struct {
-	repo repository.Cheat
+	repo repository.Cheats
 }
 
-func NewCheatService(repo repository.Cheat) *CheatService {
+func NewCheatService(repo repository.Cheats) *CheatService {
 	return &CheatService{repo: repo}
 }
 

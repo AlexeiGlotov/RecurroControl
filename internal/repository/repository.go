@@ -24,20 +24,26 @@ type Admission interface {
 	GetKey() ([]todo.RegAdmission, error)
 }
 
-type Cheat interface {
+type Users interface {
+	GetUsers() ([]todo.User, error)
+}
+
+type Cheats interface {
 	GetCheats() ([]todo.StCheats, error)
 }
 
 type Repository struct {
 	Authorization
 	Admission
-	Cheat
+	Cheats
+	Users
 }
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthSql(db),
 		Admission:     NewAdmissionSql(db),
-		Cheat:         NewCheatSql(db),
+		Cheats:        NewCheatSql(db),
+		Users:         NewUsersSql(db),
 	}
 }

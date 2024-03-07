@@ -12,7 +12,7 @@ func (h *Handler) getCheat(c *gin.Context) {
 		return
 	}
 
-	cheats, err := h.services.Cheat.GetCheats()
+	cheats, err := h.services.Cheats.GetCheats()
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
