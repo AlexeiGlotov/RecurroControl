@@ -23,6 +23,10 @@ type Cheats interface {
 	CreateCheats(cheat *models.Cheats) (int, error)
 }
 
+type LicenseKeys interface {
+	CreateLicenseKeys()
+}
+
 type Users interface {
 	GetUserLoginsAndRole(userID int) ([]models.User, error)
 	GetUserStruct(userID int) (*models.User, error)
@@ -32,6 +36,7 @@ type Service struct {
 	AccessKeys
 	Cheats
 	Users
+	LicenseKeys
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -40,5 +45,6 @@ func NewService(repos *repository.Repository) *Service {
 		AccessKeys:    NewAdmissionService(repos.AccessKeys),
 		Cheats:        NewCheatService(repos.Cheats),
 		Users:         NewUsersService(repos.Users),
+		LicenseKeys:   NewLicenseKeysService(repos.LicenseKeys),
 	}
 }

@@ -34,11 +34,16 @@ type Cheats interface {
 	CreateCheats(cheat *models.Cheats) (int, error)
 }
 
+type LicenseKeys interface {
+	CreateLicenseKeys()
+}
+
 type Repository struct {
 	Authorization
 	AccessKeys
 	Cheats
 	Users
+	LicenseKeys
 }
 
 func NewRepository(db *sql.DB) *Repository {
@@ -47,5 +52,6 @@ func NewRepository(db *sql.DB) *Repository {
 		AccessKeys:    NewAdmissionSql(db),
 		Cheats:        NewCheatSql(db),
 		Users:         NewUsersSql(db),
+		LicenseKeys:   NewLicenseKeysSql(db),
 	}
 }

@@ -50,9 +50,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			users.GET("/getUserLoginsAndRole", h.getUserLoginsAndRole)
 		}
 
-		keys := api.Group("/keys")
+		licenseKeys := api.Group("/license-keys")
 		{
-			keys.POST("/", h.createKeys)
+			licenseKeys.POST("/", h.createLicenseKeys)
 		}
 	}
 
