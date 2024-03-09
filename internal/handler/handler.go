@@ -41,6 +41,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		cheats := api.Group("/cheats")
 		{
+			cheats.POST("/", h.createCheat)
 			cheats.GET("/", h.getCheat)
 		}
 

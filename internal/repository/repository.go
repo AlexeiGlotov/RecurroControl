@@ -30,7 +30,8 @@ type Users interface {
 }
 
 type Cheats interface {
-	GetCheats() ([]models.Cheats, error)
+	GetCheats(role string) ([]models.Cheats, error)
+	CreateCheats(cheat *models.Cheats) (int, error)
 }
 
 type Repository struct {
