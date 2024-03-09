@@ -2,11 +2,12 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
 
-	todo "RecurroControl"
+	"RecurroControl/models"
 )
 
 type AdmissionSql struct {
@@ -32,7 +33,7 @@ func generateUniqueKey() string {
 	return string(key)
 }
 
-func (a *AdmissionSql) CreateKey(userID int) (string, error) {
+func (a *AdmissionSql) CreateAccessKey(userID int, role string) (string, error) {
 	var login string
 
 	query := fmt.Sprintf("SELECT login FROM %s WHERE id=?", usersTable)
@@ -48,8 +49,8 @@ func (a *AdmissionSql) CreateKey(userID int) (string, error) {
 	}
 
 	key_gen := generateUniqueKey()
-	query = fmt.Sprintf("INSERT INTO %s (access_key ,owner) values (?,?)", admissionTable)
-	row = a.db.QueryRow(query, key_gen, login)
+	query = fmt.Sprintf("INSERT INTO %s (access_key ,owner,role) values (?,?,?)", admissionTable)
+	row = a.db.QueryRow(query, key_gen, login, role)
 
 	if row.Err() != nil {
 		return "", row.Err()
@@ -58,11 +59,20 @@ func (a *AdmissionSql) CreateKey(userID int) (string, error) {
 	return key_gen, nil
 }
 
-func (a *AdmissionSql) GetKey() ([]todo.RegAdmission, error) {
+func (a *AdmissionSql) GetAccessKey(login, role string) ([]models.AccessKey, error) {
 
-	ra := []todo.RegAdmission{}
+	ra := []models.AccessKey{}
+	var query string
 
-	query := fmt.Sprintf("SELECT * FROM %s", admissionTable)
+	switch role {
+	case models.Admin:
+		query = fmt.Sprintf("SELECT * FROM %s", admissionTable)
+	case models.Distributors:
+		query = fmt.Sprintf("SELECT * FROM %s WHERE owner = '%s'", admissionTable, login)
+	default:
+		return nil, errors.New("bad role")
+	}
+
 	row, err := a.db.Query(query)
 
 	if err != nil {
@@ -70,8 +80,8 @@ func (a *AdmissionSql) GetKey() ([]todo.RegAdmission, error) {
 	}
 
 	for row.Next() {
-		temp := todo.RegAdmission{}
-		err := row.Scan(&temp.Id, &temp.Access_key, &temp.Owner, &temp.IsLogin)
+		temp := models.AccessKey{}
+		err := row.Scan(&temp.Id, &temp.AccessKey, &temp.Owner, &temp.Role, &temp.IsLogin)
 		if err != nil {
 			return nil, err
 		}

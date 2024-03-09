@@ -1,34 +1,34 @@
 package service
 
 import (
-	todo "RecurroControl"
 	"RecurroControl/internal/repository"
+	"RecurroControl/models"
 )
 
 type Authorization interface {
-	CreateUser(user todo.SignUpInput) (int, error)
+	CreateUser(user models.SignUpInput) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
-	CheckKeyAdmission(key string) (string, error)
-	SetLoginAdmission(login, key string) error
+	CheckAccessKey(key string) (*models.AccessKey, error)
+	SetLoginAccessKey(login, key string) error
 }
 
-type Admission interface {
-	CreateKey(userID int) (string, error)
-	GetKey() ([]todo.RegAdmission, error)
+type AccessKeys interface {
+	CreateAccessKey(userID int, role string) (string, error)
+	GetAccessKey(login, role string) ([]models.AccessKey, error)
 }
 
 type Cheats interface {
-	GetCheats() ([]todo.StCheats, error)
+	GetCheats() ([]models.Cheats, error)
 }
 
 type Users interface {
-	GetUserLoginsAndRole(userID int) ([]todo.User, error)
-	GetUserStruct(userID int) (*todo.User, error)
+	GetUserLoginsAndRole(userID int) ([]models.User, error)
+	GetUserStruct(userID int) (*models.User, error)
 }
 type Service struct {
 	Authorization
-	Admission
+	AccessKeys
 	Cheats
 	Users
 }
@@ -36,7 +36,7 @@ type Service struct {
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
-		Admission:     NewAdmissionService(repos.Admission),
+		AccessKeys:    NewAdmissionService(repos.AccessKeys),
 		Cheats:        NewCheatService(repos.Cheats),
 		Users:         NewUsersService(repos.Users),
 	}

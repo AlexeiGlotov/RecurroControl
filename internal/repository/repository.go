@@ -3,39 +3,39 @@ package repository
 import (
 	"database/sql"
 
-	todo "RecurroControl"
+	"RecurroControl/models"
 )
 
 const (
 	usersTable     = "users"
-	admissionTable = "reg_admission"
+	admissionTable = "access_key"
 	cheatTable     = "cheats"
 )
 
 type Authorization interface {
-	CreateUser(user todo.SignUpInput) (int, error)
-	GetUser(username, password string) (todo.User, error)
-	CheckKeyAdmission(key string) (string, error)
-	SetLoginAdmission(login, key string) error
+	CreateUser(user models.SignUpInput) (int, error)
+	GetUser(username, password string) (models.User, error)
+	CheckAccessKey(key string) (*models.AccessKey, error)
+	SetLoginAccessKey(login, key string) error
 }
 
-type Admission interface {
-	CreateKey(userID int) (string, error)
-	GetKey() ([]todo.RegAdmission, error)
+type AccessKeys interface {
+	CreateAccessKey(userID int, role string) (string, error)
+	GetAccessKey(login, role string) ([]models.AccessKey, error)
 }
 
 type Users interface {
-	GetUserLoginsAndRole(userID int) ([]todo.User, error)
-	GetUserStruct(userID int) (*todo.User, error)
+	GetUserLoginsAndRole(userID int) ([]models.User, error)
+	GetUserStruct(userID int) (*models.User, error)
 }
 
 type Cheats interface {
-	GetCheats() ([]todo.StCheats, error)
+	GetCheats() ([]models.Cheats, error)
 }
 
 type Repository struct {
 	Authorization
-	Admission
+	AccessKeys
 	Cheats
 	Users
 }
@@ -43,7 +43,7 @@ type Repository struct {
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthSql(db),
-		Admission:     NewAdmissionSql(db),
+		AccessKeys:    NewAdmissionSql(db),
 		Cheats:        NewCheatSql(db),
 		Users:         NewUsersSql(db),
 	}

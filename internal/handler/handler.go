@@ -29,15 +29,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/sign-in", h.signIn)
-		auth.POST("/check-admission-key", h.checkAdmissionKey)
 	}
 
 	api := router.Group("/api", h.userIdentity)
 	{
-		admission := api.Group("/admission")
+		accessKeys := api.Group("/access-keys")
 		{
-			admission.POST("/", h.createKey)
-			admission.GET("/", h.getKey)
+			accessKeys.POST("/", h.createAccessKeys)
+			accessKeys.GET("/", h.getAccessKey)
 		}
 
 		cheats := api.Group("/cheats")
@@ -48,6 +47,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		users := api.Group("/users")
 		{
 			users.GET("/getUserLoginsAndRole", h.getUserLoginsAndRole)
+		}
+
+		keys := api.Group("/keys")
+		{
+			keys.POST("/", h.createKeys)
 		}
 	}
 

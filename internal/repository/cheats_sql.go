@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	todo "RecurroControl"
+	"RecurroControl/models"
 )
 
 type CheatSql struct {
@@ -15,9 +15,9 @@ func NewCheatSql(db *sql.DB) *CheatSql {
 	return &CheatSql{db: db}
 }
 
-func (a *CheatSql) GetCheats() ([]todo.StCheats, error) {
+func (a *CheatSql) GetCheats() ([]models.Cheats, error) {
 
-	cheats := []todo.StCheats{}
+	cheats := []models.Cheats{}
 
 	query := fmt.Sprintf("SELECT * FROM %s", cheatTable)
 	row, err := a.db.Query(query)
@@ -27,7 +27,7 @@ func (a *CheatSql) GetCheats() ([]todo.StCheats, error) {
 	}
 
 	for row.Next() {
-		temp := todo.StCheats{}
+		temp := models.Cheats{}
 		err := row.Scan(&temp.Id, &temp.Name, &temp.Secure, &temp.IsAllowedGenerate)
 		if err != nil {
 			return nil, err

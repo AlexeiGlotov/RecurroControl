@@ -1,8 +1,8 @@
 package service
 
 import (
-	todo "RecurroControl"
 	"RecurroControl/internal/repository"
+	"RecurroControl/models"
 )
 
 type UsersService struct {
@@ -13,10 +13,10 @@ func NewUsersService(repo repository.Users) *UsersService {
 	return &UsersService{repo: repo}
 }
 
-func (u *UsersService) GetUserLoginsAndRole(userID int) ([]todo.User, error) {
+func (u *UsersService) GetUserLoginsAndRole(userID int) ([]models.User, error) {
 	return u.repo.GetUserLoginsAndRole(userID)
 }
 
-func (u *UsersService) GetUserStruct(userID int) (*todo.User, error) {
+func (u *UsersService) GetUserStruct(userID int) (*models.User, error) {
 	return u.repo.GetUserStruct(userID)
 }

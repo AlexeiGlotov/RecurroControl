@@ -3,5 +3,5 @@ port : "8080"
 db:
   login : "root"
   port : "3333"
-  dbname : "bdsellers"
+  dbname : "recurro"
   sslmode : "disable"

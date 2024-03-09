@@ -8,8 +8,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	todo "RecurroControl"
 	"RecurroControl/internal/repository"
+	"RecurroControl/models"
 )
 
 const (
@@ -66,7 +66,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 	return token.SignedString([]byte(signinKey))
 }
 
-func (s *AuthService) CreateUser(user todo.SignUpInput) (int, error) {
+func (s *AuthService) CreateUser(user models.SignUpInput) (int, error) {
 	user.Password = genereatePasswordHash(user.Password)
 	return s.repo.CreateUser(user)
 }
@@ -76,10 +76,10 @@ func genereatePasswordHash(password string) string {
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
-func (s *AuthService) CheckKeyAdmission(key string) (string, error) {
-	return s.repo.CheckKeyAdmission(key)
+func (s *AuthService) CheckAccessKey(key string) (*models.AccessKey, error) {
+	return s.repo.CheckAccessKey(key)
 }
 
-func (s *AuthService) SetLoginAdmission(login, key string) error {
-	return s.repo.SetLoginAdmission(login, key)
+func (s *AuthService) SetLoginAccessKey(login, key string) error {
+	return s.repo.SetLoginAccessKey(login, key)
 }

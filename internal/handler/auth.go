@@ -5,13 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	todo "RecurroControl"
+	"RecurroControl/models"
 )
 
 // Регистрация
 
 func (h *Handler) signUp(c *gin.Context) {
-	var input todo.SignUpInput
+	var input models.SignUpInput
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -22,13 +22,14 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	owner, err := h.services.CheckKeyAdmission(input.Access_Key)
+	access_key, err := h.services.Authorization.CheckAccessKey(input.Access_Key)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	input.Owner = owner
+	input.Owner = access_key.Owner
+	input.Role = access_key.Role
 
 	id, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
@@ -36,7 +37,7 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	err = h.services.Authorization.SetLoginAdmission(input.Login, input.Access_Key)
+	err = h.services.Authorization.SetLoginAccessKey(input.Login, input.Access_Key)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -66,26 +67,4 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	c.JSON(http.StatusOK, map[string]interface{}{"token": token})
 
-}
-
-type stKey struct {
-	Key string `json:"key"`
-}
-
-func (h *Handler) checkAdmissionKey(c *gin.Context) {
-
-	key := stKey{}
-	if err := c.BindJSON(&key); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	owner, err := h.services.CheckKeyAdmission(key.Key)
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"owner": owner,
-	})
 }
