@@ -12,7 +12,7 @@ func (h *Handler) createKey(c *gin.Context) {
 		return
 	}
 
-	key, err := h.services.Admission.CreateKey(userID.Id)
+	key, err := h.services.Admission.CreateKey(userID)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

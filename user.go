@@ -2,6 +2,13 @@ package todo
 
 import "database/sql"
 
+const (
+	Admin    = "admin"
+	Moder    = "moder"
+	Seller   = "sseller"
+	Reseller = "reseller"
+)
+
 type StLicenseKeys struct {
 	Id           uint16         `json:"id"`
 	License_key  string         `json:"license_key"`

@@ -24,14 +24,14 @@ type AuthService struct {
 
 type tokenClaims struct {
 	jwt.StandardClaims
-	todo.User
+	UserID int
 }
 
 func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) ParseToken(accessToken string) (*todo.User, error) {
+func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
@@ -39,15 +39,15 @@ func (s *AuthService) ParseToken(accessToken string) (*todo.User, error) {
 		return []byte(signinKey), nil
 	})
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	claims, ok := token.Claims.(*tokenClaims)
 	if !ok {
-		return nil, errors.New("token claims are not of type *tokenClaims")
+		return 0, errors.New("token claims are not of type *tokenClaims")
 	}
 
-	return &claims.User, nil
+	return claims.UserID, nil
 }
 
 func (s *AuthService) GenerateToken(username, password string) (string, error) {
@@ -61,7 +61,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 			ExpiresAt: time.Now().Add(tokenTTL).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
-		user,
+		user.Id,
 	})
 	return token.SignedString([]byte(signinKey))
 }

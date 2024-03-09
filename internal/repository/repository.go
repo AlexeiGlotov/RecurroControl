@@ -25,7 +25,8 @@ type Admission interface {
 }
 
 type Users interface {
-	GetUsers() ([]todo.User, error)
+	GetUserLoginsAndRole(userID int) ([]todo.User, error)
+	GetUserStruct(userID int) (*todo.User, error)
 }
 
 type Cheats interface {

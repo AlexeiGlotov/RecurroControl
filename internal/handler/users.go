@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) getUsers(c *gin.Context) {
-	_, err := getUserId(c)
+func (h *Handler) getUserLoginsAndRole(c *gin.Context) {
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
 
-	cheats, err := h.services.Users.GetUsers()
+	cheats, err := h.services.Users.GetUserLoginsAndRole(userID)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}

@@ -8,7 +8,7 @@ import (
 type Authorization interface {
 	CreateUser(user todo.SignUpInput) (int, error)
 	GenerateToken(username, password string) (string, error)
-	ParseToken(token string) (*todo.User, error)
+	ParseToken(token string) (int, error)
 	CheckKeyAdmission(key string) (string, error)
 	SetLoginAdmission(login, key string) error
 }
@@ -23,7 +23,8 @@ type Cheats interface {
 }
 
 type Users interface {
-	GetUsers() ([]todo.User, error)
+	GetUserLoginsAndRole(userID int) ([]todo.User, error)
+	GetUserStruct(userID int) (*todo.User, error)
 }
 type Service struct {
 	Authorization
