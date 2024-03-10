@@ -24,7 +24,7 @@ type Cheats interface {
 }
 
 type LicenseKeys interface {
-	CreateLicenseKeys()
+	CreateLicenseKeys(keys []models.LicenseKeys) error
 }
 
 type Users interface {

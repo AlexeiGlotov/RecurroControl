@@ -18,5 +18,4 @@ func (h *Handler) getUserLoginsAndRole(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"Users": cheats})
-
 }

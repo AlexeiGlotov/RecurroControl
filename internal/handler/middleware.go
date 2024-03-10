@@ -13,6 +13,39 @@ const (
 	userCtx             = "userID"
 )
 
+func (h *Handler) noAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, err := c.Cookie("jwt")
+		if err == nil {
+			c.Redirect(301, "/")
+			c.Abort()
+			return
+		}
+		//c.Next()
+	}
+}
+
+func (h *Handler) authMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString, err := c.Cookie("jwt")
+		if err != nil {
+			//c.JSON(http.StatusMovedPermanently, gin.H{"error": "Unauthorized"})
+			c.Redirect(301, "/login")
+			c.Abort()
+			return
+		}
+
+		_, err = h.services.Authorization.ParseToken(tokenString)
+		if err != nil {
+			//newErrorResponse(c, http.StatusMovedPermanently, err.Error())
+			c.Redirect(301, "/login")
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func (h *Handler) userIdentity(c *gin.Context) {
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {

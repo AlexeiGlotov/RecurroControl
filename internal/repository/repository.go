@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	usersTable     = "users"
-	admissionTable = "access_key"
-	cheatTable     = "cheats"
+	usersTable       = "users"
+	admissionTable   = "access_key"
+	cheatTable       = "cheats"
+	licenseKeysTable = "license_keys"
 )
 
 type Authorization interface {
@@ -35,7 +36,7 @@ type Cheats interface {
 }
 
 type LicenseKeys interface {
-	CreateLicenseKeys()
+	CreateLicenseKeys(keys []models.LicenseKeys) error
 }
 
 type Repository struct {

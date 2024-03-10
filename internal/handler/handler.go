@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"RecurroControl/internal/service"
@@ -21,10 +19,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.Static("/static", "./public")
 	router.LoadHTMLGlob("templates/*")
 
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
-	})
+	logic := router.Group("/", h.authMiddleware())
+	{
+		logic.GET("/", h.renderIndexPage)
+	}
 
+	router.GET("/login", h.noAuthMiddleware(), h.renderLoginPage)
+	router.GET("/registration", h.noAuthMiddleware(), h.renderRegistrationPage)
+
+	router.GET("/logout", h.logout)
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-up", h.signUp)

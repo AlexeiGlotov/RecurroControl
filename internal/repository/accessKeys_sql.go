@@ -19,7 +19,7 @@ func NewAdmissionSql(db *sql.DB) *AdmissionSql {
 }
 
 func generateUniqueKey() string {
-	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+	const charset = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz123456789"
 
 	seed := int64(time.Now().UnixNano())
 	src := rand.NewSource(seed)

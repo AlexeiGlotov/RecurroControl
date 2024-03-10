@@ -1,0 +1,48 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+<h1>Login</h1>
+<form id="loginForm">
+    <label for="login">Username:</label>
+    <input type="text" id="login" name="login" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <button type="button" onclick="submitForm()">Login</button>
+</form>
+
+<script>
+    function submitForm() {
+        var login = document.getElementById("login").value;
+        var password = document.getElementById("password").value;
+
+        var data = {
+            login: login,
+            password: password
+        };
+
+        fetch('/auth/sign-in', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                window.location.href = '/';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // Дополнительная обработка ошибок
+            });
+    }
+</script>
+
+</body>
+</html>
