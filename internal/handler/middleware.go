@@ -13,15 +13,14 @@ const (
 	userCtx             = "userID"
 )
 
-func (h *Handler) noAuthMiddleware() gin.HandlerFunc {
+func (h *Handler) ensureNotLoggedIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		_, err := c.Cookie("jwt")
-		if err == nil {
-			c.Redirect(301, "/")
+		if _, err := c.Cookie("jwt"); err == nil {
+			c.Redirect(http.StatusSeeOther, "/")
 			c.Abort()
 			return
 		}
-		//c.Next()
+		c.Next()
 	}
 }
 

@@ -24,10 +24,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		logic.GET("/", h.renderIndexPage)
 	}
 
-	router.GET("/login", h.noAuthMiddleware(), h.renderLoginPage)
-	router.GET("/registration", h.noAuthMiddleware(), h.renderRegistrationPage)
+	router.GET("/login", h.ensureNotLoggedIn(), h.renderLoginPage)
+	router.GET("/registration", h.ensureNotLoggedIn(), h.renderRegistrationPage)
 
 	router.GET("/logout", h.logout)
+
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-up", h.signUp)
