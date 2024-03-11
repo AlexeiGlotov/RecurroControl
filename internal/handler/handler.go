@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"RecurroControl/internal/service"
@@ -17,21 +16,6 @@ func NewHandler(services *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
-
-	router.Use(cors.Default())
-
-	router.Static("/static", "./public")
-	router.LoadHTMLGlob("templates/*")
-
-	logic := router.Group("/", h.authMiddleware())
-	{
-		logic.GET("/", h.renderIndexPage)
-	}
-
-	router.GET("/login", h.ensureNotLoggedIn(), h.renderLoginPage)
-	router.GET("/registration", h.ensureNotLoggedIn(), h.renderRegistrationPage)
-
-	router.GET("/logout", h.logout)
 
 	auth := router.Group("/auth")
 	{

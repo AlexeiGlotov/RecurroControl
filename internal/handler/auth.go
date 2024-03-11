@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -67,27 +66,6 @@ func (h *Handler) signIn(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
-	c.SetCookie("jwt", token, int(time.Hour.Seconds()), "/", "localhost", false, true)
-
 	c.JSON(http.StatusOK, map[string]interface{}{"token": token})
 
-}
-
-func (h *Handler) logout(c *gin.Context) {
-	c.SetCookie("jwt", "", -1, "/", "localhost", false, true)
-	//c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
-
-	c.JSON(http.StatusOK, map[string]interface{}{"ok": "ok"})
-}
-
-func (h *Handler) renderLoginPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "login.html", nil)
-}
-
-func (h *Handler) renderRegistrationPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "registration.html", nil)
-}
-
-func (h *Handler) renderIndexPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", nil)
 }
