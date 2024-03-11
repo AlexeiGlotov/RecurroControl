@@ -48,7 +48,7 @@ func (h *Handler) signUp(c *gin.Context) {
 }
 
 type signInInput struct {
-	Login    string `json:"login" binding:"required"`
+	Login    string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 

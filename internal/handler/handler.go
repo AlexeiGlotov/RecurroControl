@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"RecurroControl/internal/service"
@@ -16,6 +17,9 @@ func NewHandler(services *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
+
+	router.Use(cors.Default())
+
 	router.Static("/static", "./public")
 	router.LoadHTMLGlob("templates/*")
 
