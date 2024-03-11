@@ -7,11 +7,10 @@ function Navbar() {
     return (
         <div className="navbar">
             <ul>
-                <li><NavLink exact to="/">Home</NavLink></li>
-                <li><NavLink exact to="/dashboard">Dashboard</NavLink></li>
+                <li><NavLink to="/">Home</NavLink></li>
+                <li><NavLink to="/dashboard">Dashboard</NavLink></li>
                 <li><NavLink to="/contact">Contact</NavLink></li>
                 <li><NavLink to="/about">About</NavLink></li>
-                <li><NavLink to="/login">Login</NavLink></li>
                 <div>
                     {isAuthenticated ? <li>true</li> :
                         <li>false</li>} 
