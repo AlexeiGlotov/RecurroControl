@@ -21,7 +21,7 @@ axiosInstanceWithJWT.interceptors.request.use(
 
 // Экземпляр Axios для запросов без JWT
 const axiosInstanceWithoutJWT = axios.create({
-    baseURL: 'http://localhost:8080/',
+    baseURL: 'http://localhost:8080',
     // Здесь нет необходимости добавлять JWT в заголовки
 });
 
