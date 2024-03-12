@@ -1,7 +1,6 @@
 // Login.js
 import React, { useState,useContext } from 'react';
-
-import axios from 'axios';
+import { axiosInstanceWithoutJWT } from '../api/axios';
 import { AuthContext } from './AuthContext';
 
 const Login = () => {
@@ -13,10 +12,12 @@ const Login = () => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/auth/sign-in', { username, password });
+            const response = await axiosInstanceWithoutJWT.post('/auth/sign-in',{username,password});
+            //const response = await axios.post('http://localhost:8080/auth/sign-in', { username, password });
             const { token } = response.data;
             login(token)
-            console.log(token)
+
+
         } catch (error) {
             console.error('Login failed', error);
         }

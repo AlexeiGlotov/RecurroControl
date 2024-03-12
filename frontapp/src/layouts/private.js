@@ -1,11 +1,10 @@
 import React,{useContext} from "react";
 import {HashRouter, Route, Routes,Navigate,useLocation} from "react-router-dom";
-import Login from '../components/login';
-import Contact from '../components/contact';
+import AccessKeys from '../components/accessKeys';
 import Navbar from "../components/navbar";
+import LicenseKeys from "../components/licenseKeys";
 import Dashboard from "../components/dashboard";
-import Home from "../components/home";
-import About from "../components/about";
+import Cheats from "../components/cheats";
 import { AuthContext } from '../components/AuthContext';
 
 // Компонент ProtectedRoute
@@ -27,11 +26,10 @@ function PrivateRoutes() {
                 <Navbar></Navbar>
                 <div className="content">
                     <Routes>
-                        <Route path='/dashboard' element={<Dashboard/>}/>
-                        <Route path='/' element={<Home/>}/>
-                        <Route path='/contact' element={<Contact/>}/>
-                        <Route path="/about"  element={<ProtectedRoute><About /></ProtectedRoute>} />
-                        <Route path='/login' element={<Login/>}/>
+                        <Route path='/' element={<Dashboard/>}/>
+                        <Route path='/license-keys' element={<LicenseKeys/>}/>
+                        <Route path='/access-keys' element={<AccessKeys/>}/>
+                        <Route path="/cheats"  element={<ProtectedRoute><Cheats /></ProtectedRoute>} />
                     </Routes>
                 </div>
             </HashRouter>
