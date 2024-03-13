@@ -17,6 +17,6 @@ func (l *LicenseKeysService) CreateLicenseKeys(keys []models.LicenseKeys) error 
 	return l.repo.CreateLicenseKeys(keys)
 }
 
-func (l *LicenseKeysService) GetLicenseKeys(userID, limit, offset int) ([]models.LicenseKeys, error) {
-	return l.repo.GetLicenseKeys(userID, limit, offset)
+func (l *LicenseKeysService) GetLicenseKeys(userID, limit, offset int, filter string) ([]models.LicenseKeys, error) {
+	return l.repo.GetLicenseKeys(userID, limit, offset, filter)
 }

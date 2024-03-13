@@ -37,7 +37,6 @@ func (a *CheatSql) UpdateCheat(cheat *models.Cheats) error {
 	if cheat.Id == 0 {
 		return errors.New("id cheat 0")
 	}
-	fmt.Println(cheat)
 	query := fmt.Sprintf("UPDATE %s SET name = ?, secure = ?, is_allowed_generate = ? WHERE id = ?", cheatTable)
 	result, err := a.db.Exec(query, cheat.Name, cheat.Secure, cheat.IsAllowedGenerate, cheat.Id)
 	if err != nil {

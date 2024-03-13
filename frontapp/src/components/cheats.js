@@ -46,11 +46,8 @@ function Cheats() {
 
     const handleAllowedGenerateChange = async (keyId, newValue) => {
 
-        const string = newValue; // Ваша строка
-        const boolValue = string !== "false"; // Преобразует "false" в false, а все остальное в true
-
         const updatedCheats = cheats.map(cheat =>
-            cheat.id === keyId ? { ...cheat, is_allowed_generate: boolValue } : cheat
+            cheat.id === keyId ? { ...cheat, is_allowed_generate: parseInt(newValue) } : cheat
         );
 
         const updatedCheat = updatedCheats.find(cheat => cheat.id === keyId);
@@ -147,8 +144,8 @@ function Cheats() {
                         value={key.is_allowed_generate}
                         onChange={(e) => handleAllowedGenerateChange(key.id, e.target.value)}
                     >
-                        <option value={true}>Allowed</option>
-                        <option value={false}>Forbidden</option>
+                        <option value={1}>Allowed</option>
+                        <option value={0}>Forbidden</option>
                     </select>
 
                 </td>

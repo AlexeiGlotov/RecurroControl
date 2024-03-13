@@ -26,7 +26,7 @@ type Cheats interface {
 
 type LicenseKeys interface {
 	CreateLicenseKeys(keys []models.LicenseKeys) error
-	GetLicenseKeys(userID, limit, offset int) ([]models.LicenseKeys, error)
+	GetLicenseKeys(userID, limit, offset int, filter string) ([]models.LicenseKeys, error)
 }
 
 type Users interface {

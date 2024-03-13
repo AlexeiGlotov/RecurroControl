@@ -18,6 +18,7 @@ function LicenseKeys() {
     const [licenseKeys, setLicenseKeys] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [filter, setFilter] = useState('');
+    const [serverFilter, setServerFilter] = useState("");
 
     const handleCheatChange = (event) => {
         setSelectedCheat(event.target.value);
@@ -63,19 +64,30 @@ function LicenseKeys() {
     useEffect(() => {
         const fetchLicenseKeys = async () => {
             try {
-                const response = await axiosInstanceWithJWT.get(`api/license-keys/?page=${currentPage}`)
+                const response = await axiosInstanceWithJWT.get(`api/license-keys/?page=${currentPage}&query=${serverFilter}`)
                 setLicenseKeys(response.data.keys);
             } catch (error) {
-                toast.error(`error: ${error.message}`);
+                if (error.response.data.message === "bad page"){
+                    toast.error(`no filter results`);
+                }
+                else{
+                    toast.error(`error: ${error.message}`);
+                }
+
             } finally {
                 setIsLoading(false);
             }
         };
 
-        // Вызов функции
-        fetchLicenseKeys();
+        const timerId = setTimeout(() => {
+                fetchLicenseKeys();
+        }, 500);
 
-    }, [currentPage]);
+        return () => {
+            clearTimeout(timerId);
+        };// 500 мс задержки
+
+    }, [currentPage,serverFilter]);
 
     useEffect(() => {
         const fetchDatas = async () => {
@@ -92,8 +104,6 @@ function LicenseKeys() {
                 setLoading(false);
             }
         };
-
-
         fetchDatas();
     }, []);
 
@@ -181,11 +191,20 @@ function LicenseKeys() {
         setFilter(event.target.value.toLowerCase());
     };
 
+    const handleServerFilterChange = (event) => {
+        setServerFilter(event.target.value.toLowerCase());
+    };
+
     // Функция для проверки вхождения фильтра в любое из полей объекта ключа лицензии
     const filterLicenseKeys = (key) => {
-        return Object.values(key).some(value =>
-            value.toString().toLowerCase().includes(filter)
-        );
+        return Object.values(key).some(value => {
+            // Если значение равно null, пропускаем его или обрабатываем по-другому
+            if (value === null) {
+                return false; // Например, пропустить значение null
+            }
+            // Используем value.toString() только для ненулевых значений
+            return value.toString().toLowerCase().includes(filter);
+        });
     };
 
     const filteredLicenseKeys = licenseKeys.filter(filterLicenseKeys);
@@ -196,14 +215,21 @@ function LicenseKeys() {
               <div>
                   <button onClick={handlePrevPage} disabled={currentPage === 1}>Предыдущая</button>
                   <button onClick={handleNextPage}>Следующая</button>
-                   Страница {currentPage}
+                  Страница {currentPage}
               </div>
 
               <input
                   type="text"
                   value={filter}
                   onChange={handleFilterChange}
-                  placeholder="Поиск по всем полям..."
+                  placeholder="Клиентский фильтр"
+              />
+
+              <input
+                  type="text"
+                  value={serverFilter}
+                  onChange={handleServerFilterChange}
+                  placeholder="Серверный фильтр"
               />
 
               <table>
@@ -216,6 +242,13 @@ function LicenseKeys() {
                       <th>Holder</th>
                       <th>Creator</th>
                       <th>Date of Creation</th>
+                      <th>Date of Activation</th>
+                      <th>HWID</th>
+                      <th>HWIDK</th>
+                      <th>Banned</th>
+                      <th>ResetHWID</th>
+                      <th>Action</th>
+                      <th>Remove</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -228,6 +261,10 @@ function LicenseKeys() {
                           <td>{key.holder}</td>
                           <td>{key.creator}</td>
                           <td>{key.date_creation}</td>
+                          <td>{key.date_activation}</td>
+                          <td>{key.hwid}</td>
+                          <td>{key.hwidk}</td>
+                          <td>{key.banned}</td>
                       </tr>
                   ))}
                   </tbody>

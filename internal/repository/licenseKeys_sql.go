@@ -37,11 +37,37 @@ func (l *LicenseKeysSql) CreateLicenseKeys(keys []models.LicenseKeys) error {
 	return nil
 }
 
-func (l *LicenseKeysSql) GetLicenseKeys(userID, limit, offset int) ([]models.LicenseKeys, error) {
+func buildQuery(filters []string, value string) string {
+
+	var conditions []string
+	for _, iter := range filters {
+		conditions = append(conditions, fmt.Sprintf("%s LIKE '%%%s%%'", iter, value))
+	}
+
+	whereClause := strings.Join(conditions, " OR ")
+	return fmt.Sprintf("%s", whereClause)
+}
+
+func (l *LicenseKeysSql) GetLicenseKeys(userID, limit, offset int, filter string) ([]models.LicenseKeys, error) {
 	var cheats []models.LicenseKeys
 
-	query := fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation FROM %s LIMIT ? OFFSET ?",
-		licenseKeysTable)
+	or := buildQuery([]string{
+		"license_key",
+		"cheat",
+		"ttl_cheat",
+		"holder",
+		"creator",
+		"date_creation",
+		"date_activation",
+		"hwid",
+		"hwidk",
+	},
+		filter,
+	)
+
+	query := fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation,date_activation,hwid,hwidk,banned,is_deleted FROM %s WHERE %s LIMIT ? OFFSET ?",
+		licenseKeysTable, or)
+	fmt.Println(query)
 	rows, err := l.db.Query(query, limit, offset)
 	if err != nil {
 		return nil, err
@@ -56,13 +82,17 @@ func (l *LicenseKeysSql) GetLicenseKeys(userID, limit, offset int) ([]models.Lic
 			&temp.TTLCheat,
 			&temp.Holder,
 			&temp.Creator,
-			&temp.DateCreation); err != nil {
+			&temp.DateCreation,
+			&temp.DateActivation,
+			&temp.HWID,
+			&temp.HWIDK,
+			&temp.Banned,
+			&temp.IsDeleted); err != nil {
 			return nil, err
 		}
 		cheats = append(cheats, temp)
 	}
 
-	// Проверяем на наличие ошибок при итерации по результатам
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
