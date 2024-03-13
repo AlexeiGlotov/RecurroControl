@@ -51,6 +51,7 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 		tempLicenseKey.Creator = user.Login
 		tempLicenseKey.Holder = inputKeys.Holder
 		tempLicenseKey.TTLCheat = inputKeys.TTLCheat
+		tempLicenseKey.Cheat = inputKeys.Cheat
 		tempLicenseKey.LicenseKeys = generateUniqueKey()
 
 		licenseKeys = append(licenseKeys, tempLicenseKey)

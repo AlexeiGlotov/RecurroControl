@@ -32,6 +32,7 @@ func (h *Handler) createAccessKeys(c *gin.Context) {
 }
 
 func (h *Handler) getAccessKey(c *gin.Context) {
+
 	userID, err := getUserId(c)
 	if err != nil {
 		return

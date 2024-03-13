@@ -9,6 +9,7 @@ import (
 )
 
 func (h *Handler) getCheat(c *gin.Context) {
+
 	userID, err := getUserId(c)
 	if err != nil {
 		return

@@ -17,5 +17,5 @@ func (h *Handler) getUserLoginsAndRole(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{"Users": cheats})
+	c.JSON(http.StatusOK, map[string]interface{}{"users": cheats})
 }
