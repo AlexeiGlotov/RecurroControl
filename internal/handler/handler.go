@@ -16,7 +16,7 @@ func NewHandler(services *service.Service) *Handler {
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.New()
+	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
 		//AllowOrigins:     []string{"http://localhost:3000"},
@@ -45,16 +45,22 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 			cheats.POST("/", h.createCheat)
 			cheats.GET("/", h.getCheat)
+			cheats.PUT("/", h.updateCheat)
 		}
 
 		users := api.Group("/users")
 		{
-			users.GET("/sw", h.getUserLoginsAndRole)
+			users.GET("/getUsers", h.getUsers)
+			users.POST("/getUser", h.getUser)
+			users.POST("/ban", h.ban)
+			users.POST("/unban", h.unban)
+			users.POST("/delete", h.delete)
 		}
 
 		licenseKeys := api.Group("/license-keys")
 		{
 			licenseKeys.POST("/", h.createLicenseKeys)
+			licenseKeys.GET("/", h.getLicenseKeys)
 		}
 	}
 

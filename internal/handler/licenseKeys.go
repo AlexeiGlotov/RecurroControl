@@ -3,6 +3,7 @@ package handler
 import (
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -37,9 +38,14 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 		return
 	}
 
-	user, err := h.services.Users.GetUserStruct(userID)
+	user, err := h.services.Users.GetUser(userID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if inputKeys.CountKeys > 50 {
+		newErrorResponse(c, http.StatusBadRequest, "Превышено максимальное количество ключей")
 		return
 	}
 
@@ -64,4 +70,37 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"keys": licenseKeys})
+}
+
+func (h *Handler) getLicenseKeys(c *gin.Context) {
+
+	userID, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	pageStr, ok := c.GetQuery("page")
+	if !ok {
+		pageStr = "1"
+	}
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "неверный формат страницы"})
+		return
+	}
+
+	offset := (page - 1) * 100
+
+	keys, err := h.services.LicenseKeys.GetLicenseKeys(userID, 100, offset)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if len(keys) == 0 {
+		newErrorResponse(c, http.StatusBadRequest, "bad page")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{"keys": keys})
 }

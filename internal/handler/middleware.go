@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -47,7 +46,6 @@ func (h *Handler) authMiddleware() gin.HandlerFunc {
 }
 
 func (h *Handler) userIdentity(c *gin.Context) {
-	logrus.Info("hi")
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {
 		newErrorResponse(c, http.StatusUnauthorized, "empty auth header")

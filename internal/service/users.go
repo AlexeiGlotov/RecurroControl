@@ -13,10 +13,22 @@ func NewUsersService(repo repository.Users) *UsersService {
 	return &UsersService{repo: repo}
 }
 
-func (u *UsersService) GetUserLoginsAndRole(userID int) ([]models.User, error) {
-	return u.repo.GetUserLoginsAndRole(userID)
+func (u *UsersService) GetUsers(userID int) ([]models.User, error) {
+	return u.repo.GetUsers(userID)
 }
 
-func (u *UsersService) GetUserStruct(userID int) (*models.User, error) {
-	return u.repo.GetUserStruct(userID)
+func (u *UsersService) GetUser(userID int) (*models.User, error) {
+	return u.repo.GetUser(userID)
+}
+
+func (u *UsersService) Ban(userID int) error {
+	return u.repo.Ban(userID)
+}
+
+func (u *UsersService) Unban(userID int) error {
+	return u.repo.Unban(userID)
+}
+
+func (u *UsersService) Delete(userID int) error {
+	return u.repo.Delete(userID)
 }

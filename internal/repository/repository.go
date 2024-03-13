@@ -26,17 +26,22 @@ type AccessKeys interface {
 }
 
 type Users interface {
-	GetUserLoginsAndRole(userID int) ([]models.User, error)
-	GetUserStruct(userID int) (*models.User, error)
+	GetUsers(userID int) ([]models.User, error)
+	GetUser(userID int) (*models.User, error)
+	Ban(userID int) error
+	Unban(userID int) error
+	Delete(userID int) error
 }
 
 type Cheats interface {
 	GetCheats(role string) ([]models.Cheats, error)
-	CreateCheats(cheat *models.Cheats) (int, error)
+	CreateCheat(cheat *models.Cheats) (int, error)
+	UpdateCheat(cheat *models.Cheats) error
 }
 
 type LicenseKeys interface {
 	CreateLicenseKeys(keys []models.LicenseKeys) error
+	GetLicenseKeys(userID, limit, offset int) ([]models.LicenseKeys, error)
 }
 
 type Repository struct {

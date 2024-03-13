@@ -15,7 +15,7 @@ func (h *Handler) getCheat(c *gin.Context) {
 		return
 	}
 
-	user, err := h.services.Users.GetUserStruct(userID)
+	user, err := h.services.Users.GetUser(userID)
 
 	cheats, err := h.services.Cheats.GetCheats(user.Role)
 	if err != nil {
@@ -37,10 +37,30 @@ func (h *Handler) createCheat(c *gin.Context) {
 		return
 	}
 
-	id, err := h.services.Cheats.CreateCheats(&cheat)
+	id, err := h.services.Cheats.CreateCheat(&cheat)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"id": id})
+}
+
+func (h *Handler) updateCheat(c *gin.Context) {
+	_, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	var cheat models.Cheats
+	if err := c.BindJSON(&cheat); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.Cheats.UpdateCheat(&cheat)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.Status(http.StatusOK)
 }

@@ -17,6 +17,10 @@ func (c *CheatService) GetCheats(role string) ([]models.Cheats, error) {
 	return c.repo.GetCheats(role)
 }
 
-func (c *CheatService) CreateCheats(cheat *models.Cheats) (int, error) {
-	return c.repo.CreateCheats(cheat)
+func (c *CheatService) CreateCheat(cheat *models.Cheats) (int, error) {
+	return c.repo.CreateCheat(cheat)
+}
+
+func (c *CheatService) UpdateCheat(cheat *models.Cheats) error {
+	return c.repo.UpdateCheat(cheat)
 }

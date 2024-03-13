@@ -12,6 +12,7 @@ function Navbar() {
                 <li><NavLink to="/license-keys">License Keys</NavLink></li>
                 <li><NavLink to="/access-keys">Access Keys</NavLink></li>
                 <li><NavLink to="/cheats">Cheats</NavLink></li>
+                <li><NavLink to="/managepanelusers">ManageUsers</NavLink></li>
                 <li>
                     {isAuthenticated ? <li>
                             <button onClick={logout}>Logout</button>

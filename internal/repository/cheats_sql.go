@@ -16,23 +16,44 @@ func NewCheatSql(db *sql.DB) *CheatSql {
 	return &CheatSql{db: db}
 }
 
-func (a *CheatSql) CreateCheats(cheat *models.Cheats) (int, error) {
+func (a *CheatSql) CreateCheat(cheat *models.Cheats) (int, error) {
 
-	var id int
-
-	query := fmt.Sprintf("INSERT INTO %s (name ,secure,is_allowed_generate) values (?,?,?)", cheatTable)
-	row := a.db.QueryRow(query, cheat.Name, cheat.Secure, cheat.IsAllowedGenerate)
-	if row.Err() != nil {
-		return 0, row.Err()
-	}
-
-	row = a.db.QueryRow(fmt.Sprintf("SELECT MAX(id) FROM %s;", cheatTable))
-
-	if err := row.Scan(&id); err != nil {
+	query := fmt.Sprintf("INSERT INTO %s (name, secure, is_allowed_generate) VALUES (?, ?, ?)", cheatTable)
+	result, err := a.db.Exec(query, cheat.Name, cheat.Secure, cheat.IsAllowedGenerate)
+	if err != nil {
 		return 0, err
 	}
 
-	return id, nil
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
+}
+
+func (a *CheatSql) UpdateCheat(cheat *models.Cheats) error {
+
+	if cheat.Id == 0 {
+		return errors.New("id cheat 0")
+	}
+	fmt.Println(cheat)
+	query := fmt.Sprintf("UPDATE %s SET name = ?, secure = ?, is_allowed_generate = ? WHERE id = ?", cheatTable)
+	result, err := a.db.Exec(query, cheat.Name, cheat.Secure, cheat.IsAllowedGenerate, cheat.Id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows updated")
+	}
+
+	return nil
 }
 
 func (a *CheatSql) GetCheats(role string) ([]models.Cheats, error) {

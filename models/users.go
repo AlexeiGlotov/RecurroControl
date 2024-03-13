@@ -8,14 +8,15 @@ const (
 )
 
 type User struct {
-	Id            int    `json:"id" db:"id"`
-	Login         string `json:"login" binding:"required"`
-	Password      string `json:"password_hash" binding:"required"`
+	Id    int    `json:"id" db:"id"`
+	Login string `json:"login" binding:"required"`
+	//Password      string `json:"password_hash" binding:"required"`
 	Role          string `json:"role"`
 	KeysGenerated int    `json:"keys_generated"`
 	KeysActivated int    `json:"keys_activated"`
 	Banned        int    `json:"banned"`
 	Owner         string `json:"owner" binding:"required"`
+	IsDeleted     int    `json:"is_deleted"`
 }
 
 type SignUpInput struct {
