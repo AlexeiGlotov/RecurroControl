@@ -13,6 +13,7 @@ function LicenseKeys() {
     const [selectedCheat, setSelectedCheat] = useState('');
     const [selectedUser, setSelectedUser] = useState('');
     const [keys, setKeys] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleCheatChange = (event) => {
         setSelectedCheat(event.target.value);
@@ -32,6 +33,8 @@ function LicenseKeys() {
     };
 
     const handleSubmit = async () => {
+
+        setIsLoading(true);
         const dataToSend = {
             count_keys: parseInt(subsCount),
             ttl_cheat: parseInt(daysCount),
@@ -48,7 +51,7 @@ function LicenseKeys() {
         } catch (error) {
             console.error("Ошибка при отправке данных: ", error);
         } finally {
-
+            setIsLoading(false);
         }
 
     };
@@ -78,7 +81,7 @@ function LicenseKeys() {
 
 
     if (loading) {
-        return <div>Загрузка...</div>;
+        return <div>Loading...</div>;
     }
 
     return (
@@ -131,12 +134,15 @@ function LicenseKeys() {
             <button onClick={handleSubmit}>gen subscribtion</button>
 
             <div>
-                <h2>Полученные Keys</h2>
-                {keys.map((key, index) => (
-                    <div key={index}>
-                        <p>{key.license_key}</p>
-                    </div>
-                ))}
+                <h2>Keys list:</h2>
+                {isLoading ? <p>Loading...</p> : (
+                    keys.map((key, index) => (
+                        <div key={index}>
+                            <p>{key.license_key}</p>
+                        </div>
+                    ))
+                )}
+
             </div>
         </div>
     );
