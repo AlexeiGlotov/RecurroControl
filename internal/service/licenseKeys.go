@@ -20,3 +20,19 @@ func (l *LicenseKeysService) CreateLicenseKeys(keys []models.LicenseKeys) error 
 func (l *LicenseKeysService) GetLicenseKeys(userID, limit, offset int, filter string) ([]models.LicenseKeys, error) {
 	return l.repo.GetLicenseKeys(userID, limit, offset, filter)
 }
+
+func (l *LicenseKeysService) ResetHWID(id int) error {
+	return l.repo.ResetHWID(id)
+}
+
+func (l *LicenseKeysService) Ban(id int) error {
+	return l.repo.Ban(id)
+}
+
+func (l *LicenseKeysService) Unban(id int) error {
+	return l.repo.Unban(id)
+}
+
+func (l *LicenseKeysService) Delete(id int) error {
+	return l.repo.Delete(id)
+}

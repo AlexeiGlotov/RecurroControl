@@ -109,3 +109,87 @@ func (h *Handler) getLicenseKeys(c *gin.Context) {
 
 	c.JSON(http.StatusOK, map[string]interface{}{"keys": keys})
 }
+
+type inputAction struct {
+	Id int `json:"id" binding:"required"`
+}
+
+func (h *Handler) licenseKeyResetHWID(c *gin.Context) {
+	_, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	var input inputAction
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.LicenseKeys.ResetHWID(input.Id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (h *Handler) licenseKeyBan(c *gin.Context) {
+	_, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	var input inputAction
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.LicenseKeys.Ban(input.Id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (h *Handler) licenseKeyUnban(c *gin.Context) {
+	_, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	var input inputAction
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.LicenseKeys.Unban(input.Id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (h *Handler) licenseKeyDelete(c *gin.Context) {
+	_, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	var input inputAction
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.LicenseKeys.Delete(input.Id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.Status(http.StatusOK)
+}

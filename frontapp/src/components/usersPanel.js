@@ -134,10 +134,7 @@ function ManagePanelUsers() {
                             )}
                         </td>
                         <td>
-
-
                             <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-
                         </td>
                     </tr>
                 ))}

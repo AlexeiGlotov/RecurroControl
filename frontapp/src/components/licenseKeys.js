@@ -209,6 +209,62 @@ function LicenseKeys() {
 
     const filteredLicenseKeys = licenseKeys.filter(filterLicenseKeys);
 
+    const handleDeleteUser = async (userId) => {
+        try {
+            await axiosInstanceWithJWT.post('/api/license-keys/delete', {"id": userId});
+            setLicenseKeys(licenseKeys.map(key =>
+                key.id === userId ? { ...key, is_deleted: 1 } : key));
+        }
+        catch(error) {
+            toast.error(`error: ${error.message}`);
+        }
+        finally {
+
+        }
+    };
+
+    const handleBanUnbanUser = async (userId, isBanned) => {
+        if (isBanned === 0) {
+            try {
+                await axiosInstanceWithJWT.post('/api/license-keys/unban', {"id": userId});
+                setLicenseKeys(licenseKeys.map(key =>
+                    key.id === userId ? { ...key, banned: 0 } : key));
+            }
+            catch(error) {
+                toast.error(`error: ${error.message}`);
+            }
+            finally {
+
+            }
+        } else {
+            try {
+                await axiosInstanceWithJWT.post('/api/license-keys/ban', {"id": userId});
+                setLicenseKeys(licenseKeys.map(key =>
+                    key.id === userId ? { ...key, banned: 1 } : key));
+            }
+            catch(error) {
+                toast.error(`error: ${error.message}`);
+            }
+            finally {
+            }
+        }
+        // Отправка запроса на сервер для ban/unban
+    };
+
+    const handleResetHWID = async (userId) => {
+        try {
+            axiosInstanceWithJWT.post('/api/license-keys/resetHWID', {"id": userId});
+            setLicenseKeys(licenseKeys.map(key =>
+                key.id === userId ? { ...key, hwid: null,hwidk:null } : key));
+        }
+        catch(error) {
+            toast.error(`error: ${error.message}`);
+        }
+        finally {
+
+        }
+    };
+
     const renderInfoKeyList = () => {
       return (
           <div>
@@ -232,6 +288,7 @@ function LicenseKeys() {
                   placeholder="Серверный фильтр"
               />
 
+
               <table>
                   <thead>
                   <tr>
@@ -245,14 +302,13 @@ function LicenseKeys() {
                       <th>Date of Activation</th>
                       <th>HWID</th>
                       <th>HWIDK</th>
-                      <th>Banned</th>
                       <th>ResetHWID</th>
                       <th>Action</th>
                       <th>Remove</th>
                   </tr>
                   </thead>
                   <tbody>
-                  {filteredLicenseKeys.map(key => (
+                  {filteredLicenseKeys.filter(key => key.is_deleted !== 1).map(key => (
                       <tr key={key.id}>
                           <td>{key.id}</td>
                           <td>{key.license_key}</td>
@@ -264,7 +320,25 @@ function LicenseKeys() {
                           <td>{key.date_activation}</td>
                           <td>{key.hwid}</td>
                           <td>{key.hwidk}</td>
-                          <td>{key.banned}</td>
+
+                          <td>
+                              <button
+                                  onClick={() => handleResetHWID(key.id)}
+                                  disabled={key.hwid === null && key.hwidk === null} // Условие для отключения кнопки
+                              >
+                                  Reset
+                              </button>
+                          </td>
+                          <td>
+                              {key.banned === 1 ? (
+                                  <button onClick={() => handleBanUnbanUser(key.id, 0)}>Unban</button>
+                              ) : (
+                                  <button onClick={() => handleBanUnbanUser(key.id, 1)}>Ban</button>
+                              )}
+                          </td>
+                          <td>
+                              <button onClick={() => handleDeleteUser(key.id)}>Delete</button>
+                          </td>
                       </tr>
                   ))}
                   </tbody>

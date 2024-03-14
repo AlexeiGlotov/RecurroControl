@@ -1,86 +1,69 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { axiosInstanceWithoutJWT } from '../api/axios';
-function RegistrationForm() {
-    const [formData, setFormData] = useState({
-        login: '',
-        password: '',
-        repassword: '',
-        access_key: ''
-    });
+import {toast} from "react-toastify";
+import '../styles/auth.css'
 
+function RegistrationForm() {
+    const [formData, setFormData] = useState({login: '', password: '', repassword: '', access_key: ''});
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    const handleRegistation = async (event) => {
+        event.preventDefault();
         if (formData.password !== formData.repassword) {
-            alert('Passwords do not match');
+            toast.error(`password != repassword`);
             return;
         }
-
         try {
-            const response = await axiosInstanceWithoutJWT.post('/auth/sign-up',formData);
-            //const response = await axios.post('http://localhost:8080/auth/sign-in', { username, password });
-           // const { id } = response.data;
-            navigate('/login');
-        } catch (error) {
-            console.error('registation failed', error);
-        }
+                await axiosInstanceWithoutJWT.post('/auth/sign-up',formData);
+                setFormData({ });
+                navigate('/login', { replace: true });
+                toast.success("Successful registration")
 
+        } catch (error) {
+            toast.error(`error: ${error.message}`);
+        }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
+        <div className="form-container" >
+            <form>
                 <label>Login:</label>
-                <input
-                    type="text"
-                    name="login"
-                    value={formData.login}
-                    onChange={handleChange}
+                <input className="form-input"
+                       type="text"
+                       name="login"
+                       value={formData.login}
+                       onChange={(e) => setFormData({...formData, login: e.target.value})}
                 />
-            </div>
 
-            <div>
                 <label>Password:</label>
-                <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
+                <input className="form-input"
+                       type="password"
+                       name="password"
+                       value={formData.password}
+                       onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
-            </div>
 
-            <div>
                 <label>Re-enter Password:</label>
-                <input
-                    type="password"
-                    name="repassword"
-                    value={formData.repassword}
-                    onChange={handleChange}
+                <input className="form-input"
+                       type="password"
+                       name="repassword"
+                       value={formData.repassword}
+                       onChange={(e) => setFormData({...formData, repassword: e.target.value})}
                 />
-            </div>
 
-            <div>
                 <label>Access Key:</label>
-                <input
-                    type="text"
-                    name="access_key"
-                    value={formData.access_key}
-                    onChange={handleChange}
+                <input className="form-input"
+                       type="text"
+                       name="access_key"
+                       value={formData.access_key}
+                       onChange={(e) => setFormData({...formData, access_key: e.target.value})}
                 />
-            </div>
 
-            <button type="submit">Register</button>
-        </form>
+                <button className="form-button" onClick={handleRegistation}>Register</button>
+                <p>Already have an account? <Link to="/login">Login</Link></p>
+            </form>
+        </div>
     );
 }
 

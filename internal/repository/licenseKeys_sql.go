@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -98,4 +99,80 @@ func (l *LicenseKeysSql) GetLicenseKeys(userID, limit, offset int, filter string
 	}
 
 	return cheats, nil
+}
+
+func (l *LicenseKeysSql) Ban(id int) error {
+	query := fmt.Sprintf("UPDATE %s SET `banned` = 1 WHERE id = ?", licenseKeysTable)
+
+	result, err := l.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows updated")
+	}
+	return nil
+}
+
+func (l *LicenseKeysSql) Unban(id int) error {
+	query := fmt.Sprintf("UPDATE %s SET `banned` = 0 WHERE id = ?", licenseKeysTable)
+
+	result, err := l.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows updated")
+	}
+	return nil
+}
+
+func (l *LicenseKeysSql) Delete(id int) error {
+	query := fmt.Sprintf("UPDATE %s SET `is_deleted` = 1 WHERE id = ?", licenseKeysTable)
+
+	result, err := l.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows updated")
+	}
+	return nil
+}
+
+func (l *LicenseKeysSql) ResetHWID(id int) error {
+	query := fmt.Sprintf("UPDATE %s SET `hwid` = null , hwidk = null WHERE id = ?", licenseKeysTable)
+
+	result, err := l.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows updated")
+	}
+	return nil
 }

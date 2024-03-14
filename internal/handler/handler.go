@@ -61,6 +61,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			licenseKeys.POST("/", h.createLicenseKeys)
 			licenseKeys.GET("/", h.getLicenseKeys)
+
+			licenseKeys.POST("/resetHWID", h.licenseKeyResetHWID)
+			licenseKeys.POST("/ban", h.licenseKeyBan)
+			licenseKeys.POST("/unban", h.licenseKeyUnban)
+			licenseKeys.POST("/delete", h.licenseKeyDelete)
 		}
 	}
 
