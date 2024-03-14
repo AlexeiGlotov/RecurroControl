@@ -68,6 +68,8 @@ func (a *AdmissionSql) GetAccessKey(login, role string) ([]models.AccessKey, err
 	case models.Admin:
 		query = fmt.Sprintf("SELECT * FROM %s", admissionTable)
 	case models.Distributors:
+		query = fmt.Sprintf("SELECT * FROM %s WHERE owner = '%s''", admissionTable, login)
+	case models.Reseller:
 		query = fmt.Sprintf("SELECT * FROM %s WHERE owner = '%s'", admissionTable, login)
 	default:
 		return nil, errors.New("bad role")

@@ -1,0 +1,50 @@
+.navbar {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.1); /* Цвет фона */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex; /* Используем Flexbox */
+    justify-content: space-between; /* Разнесем элементы на противоположные стороны */
+}
+
+.navbar ul {
+    list-style-type: none;
+    display: flex; /* Используем Flexbox для списка */
+    margin: 0;
+    padding: 0;
+}
+
+.navbar ul li {
+    padding: 14px 16px; /* Отступ для элементов списка */
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: #000000; /* Цвет текста ссылок */
+    display: block; /* Растягиваем на весь блок */
+}
+
+.navbar ul li a:hover {
+    background-color: #0056b3; /* Цвет фона при наведении */
+}
+
+.navbar .logout-button {
+    display: flex;
+    align-items: center;
+
+}
+
+.navbar .logout-button button {
+
+    background-color: transparent; /* Прозрачный фон для кнопки */
+    border: none;
+    color: black; /* Цвет текста кнопки */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    padding: 14px 16px;
+    margin-right: 10px;
+}
+
+.navbar .logout-button button:hover {
+    background-color: #0056b3; /* Цвет фона кнопки при наведении */
+}

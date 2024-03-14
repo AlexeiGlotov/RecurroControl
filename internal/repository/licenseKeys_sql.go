@@ -68,7 +68,6 @@ func (l *LicenseKeysSql) GetLicenseKeys(userID, limit, offset int, filter string
 
 	query := fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation,date_activation,hwid,hwidk,banned,is_deleted FROM %s WHERE %s LIMIT ? OFFSET ?",
 		licenseKeysTable, or)
-	fmt.Println(query)
 	rows, err := l.db.Query(query, limit, offset)
 	if err != nil {
 		return nil, err

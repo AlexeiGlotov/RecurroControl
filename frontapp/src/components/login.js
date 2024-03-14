@@ -4,7 +4,8 @@ import { axiosInstanceWithoutJWT } from '../api/axios';
 import { AuthContext } from './AuthContext';
 import { useNavigate,Link } from 'react-router-dom';
 import {toast} from "react-toastify";
-import '../styles/auth.css'
+
+import { Container, Form, Card, Button } from 'react-bootstrap';
 
 const Login = () => {
     const { login } = useContext(AuthContext);
@@ -25,22 +26,40 @@ const Login = () => {
     };
 
     return (
-        <div className="form-container">
-            <form >
-                <h2>Login</h2>
-                <label> Username:</label>
-                <input type="text" className="form-input" value={username}
-                       onChange={(e) => setUsername(e.target.value)}/>
+        <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
+            <Card className="w-100" style={{ maxWidth: "400px" }}>
+                <Card.Body>
+                    <h2 className="text-center mb-4">Login</h2>
+                    <Form>
+                        <Form.Group controlId="formUsername">
+                            <Form.Control
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="login"
+                            />
+                        </Form.Group>
 
-                <label>Password:</label>
-                <input type="password" className="form-input" value={password}
-                       onChange={(e) => setPassword(e.target.value)}/>
+                        <Form.Group controlId="formPassword" className="mb-4 mt-3">
+                            <Form.Control
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="password"
+                            />
+                        </Form.Group>
 
-                <button className="form-button" onClick={handleLogin}>Login</button>
-                <p>Not registered yet? <Link to="/registration">Registration</Link></p>
-            </form>
-        </div>
-);
+                        <Button variant="primary" onClick={handleLogin} className="w-100">
+                            Login
+                        </Button>
+                    </Form>
+                    <div className="text-center mt-3">
+                        Not registered yet? <Link to="/registration">Register</Link>
+                    </div>
+                </Card.Body>
+            </Card>
+        </Container>
+    );
 };
 
 export default Login;
