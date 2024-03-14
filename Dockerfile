@@ -1,19 +1,25 @@
-FROM golang:1.21-alpine3.19 AS builder
+FROM node:alpine3.19 AS react-build
 
-COPY . /auth-bot/
-WORKDIR /auth-bot/
+COPY frontapp /frontapp/
+WORKDIR /frontapp/
+RUN npm install
+RUN npm run build
+
+FROM golang:1.21-alpine3.19 AS go-build
+
+COPY . /recurro/
+WORKDIR /recurro/
 
 RUN go mod download
 RUN go build -o ./bin/bot cmd/app/main.go
 
-FROM alpine:latest
+FROM nginx:alpine AS react-nginx
+COPY --from=react-build /frontapp/build /usr/share/nginx/html
+EXPOSE 80
 
+FROM alpine:latest AS go-final
 WORKDIR /root/
-
-COPY --from=0 /auth-bot/bin/bot .
-COPY --from=0 /auth-bot/notif.json .
-COPY --from=0 /auth-bot/configs configs/
-
+COPY --from=go-build /recurro/bin/bot .
+COPY --from=go-build /recurro/configs configs/
 EXPOSE 8065
-
 CMD ["./bot"]
