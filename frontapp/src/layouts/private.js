@@ -7,6 +7,7 @@ import Dashboard from "../components/dashboard";
 import Cheats from "../components/cheats";
 import { AuthContext } from '../components/AuthContext';
 import ManagePanelUsers from "../components/usersPanel";
+import LicenseKeysArr from "../components/licenseKeysArr";
 
 // Компонент ProtectedRoute
 const ProtectedRoute = ({ children }) => {
@@ -29,6 +30,7 @@ function PrivateRoutes() {
                     <Routes>
                         <Route path='/' element={<Dashboard/>}/>
                         <Route path='/license-keys' element={<LicenseKeys/>}/>
+                        <Route path='/license-keys-arr' element={<LicenseKeysArr/>}/>
                         <Route path='/access-keys' element={<AccessKeys/>}/>
                         <Route path="/cheats"  element={<ProtectedRoute><Cheats /></ProtectedRoute>} />
                         <Route path="/managepanelusers"  element={<ProtectedRoute><ManagePanelUsers /></ProtectedRoute>} />

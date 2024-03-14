@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile
       target: go-final
     ports:
-      - '8065:8065'
+      - '8080:8080'
     env_file:
       - .env
     restart: on-failure

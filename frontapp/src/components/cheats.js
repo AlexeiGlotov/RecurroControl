@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {axiosInstanceWithJWT} from "../api/axios";
 import {toast} from "react-toastify";
+import {Button, Card, Container, Form, Table} from "react-bootstrap";
 
 function Cheats() {
     const [cheats, setCheats] = useState([]);
     const [name, setName] = useState('');
     const [secure, setSecure] = useState('secure');
-    const [isAllowedGenerate, setIsAllowedGenerate] = useState(true);
+    const [isAllowedGenerate, setIsAllowedGenerate] = useState(1);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -65,7 +66,7 @@ function Cheats() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const formData = { name, secure, is_allowed_generate: isAllowedGenerate };
+        const formData = { name, secure, is_allowed_generate: parseInt(isAllowedGenerate) };
         try {
             var response = await axiosInstanceWithJWT.post('/api/cheats/', formData);
             const addCheat = { id :response.data.id, name : name, secure :secure, is_allowed_generate: isAllowedGenerate };
@@ -79,83 +80,83 @@ function Cheats() {
         }
     };
 
+    return (
+    <div>
 
-    const renderForm = () => {
-        return (
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>
-                        Name:
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Secure:
-                        <select value={secure} onChange={(e) => setSecure(e.target.value)}>
+        <Container className="my-4">
+            <Card className="p-3 mb-3">
+                <Form className="d-flex align-items-stretch">
+                    <Form.Group className="me-3 flex-grow-1">
+                        <Form.Control type="text" placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="me-3" style={{ width: '200px' }}>
+                        <Form.Control as="select" id="roleSelect" value={secure} onChange={(e) => setSecure(e.target.value)}>
                             <option value="detected">Detected</option>
                             <option value="update">Update</option>
                             <option value="secure">Secure</option>
-                        </select>
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        AllowedGenerate:
-                        <input
-                            type="checkbox"
-                            checked={isAllowedGenerate}
-                            onChange={(e) => setIsAllowedGenerate(e.target.checked)}
-                        />
-                    </label>
-                </div>
-                <button type="submit">Submit</button>
-            </form>
-        );
-    };
+                        </Form.Control>
+                    </Form.Group>
+                    <Form.Group className="me-3" style={{ width: '200px' }}>
+                        <Form.Control as="select" value={isAllowedGenerate} onChange={(e) => setIsAllowedGenerate(e.target.value)}>
+                            <option value="1">Allowed</option>
+                            <option value="0">Forbidden</option>
+                        </Form.Control>
+                    </Form.Group>
+                    <Button variant="outline-success" onClick={handleSubmit} className="ms-auto" style={{ width: '150px', whiteSpace: 'nowrap' }}>
+                        Generate
+                    </Button>
+                </Form>
+            </Card>
 
-    return (
-        <div>
-    <table>
-        <thead>
-        <tr>
-            <th>Cheat</th>
-            <th>Status</th>
-            <th>AllowedGenerate</th>
-        </tr>
-        </thead>
-        <tbody>
-        {cheats.map((key,index) => (
-            <tr key={key.id}>
-                <td>{key.name}</td>
-                <td>
-                    <select
-                        value={key.secure}
-                        onChange={(e) => handleSecureChange(key.id, e.target.value)}
-                    >
-                        <option value="secure">Secure</option>
-                        <option value="detected">Detected</option>
-                        <option value="update">Update</option>
-                    </select>
-                </td>
-                <td>
-                    <select
-                        value={key.is_allowed_generate}
-                        onChange={(e) => handleAllowedGenerateChange(key.id, e.target.value)}
-                    >
-                        <option value={1}>Allowed</option>
-                        <option value={0}>Forbidden</option>
-                    </select>
+            <Card className="p-3 ">
+            <Table striped bordered hover> {/* Измененный стиль таблицы */}
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cheat</th>
+                        <th>Status</th>
+                        <th>Allowed</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {cheats && cheats.length > 0 ? (
+                        cheats.map((cheat) => (
+                            <tr key={cheat.id}>
+                                <td>{cheat.id}</td>
+                                <td>{cheat.name}</td>
 
-                </td>
-            </tr>
-        ))}
-        </tbody>
-    </table>
-            <h2>Create cheat</h2>
-            {renderForm()}
-        </div>
+                                <td>
+                                    <select
+                                        value={cheat.secure}
+                                        onChange={(e) => handleSecureChange(cheat.id, e.target.value)}
+                                    >
+                                        <option value="secure">Secure</option>
+                                        <option value="detected">Detected</option>
+                                        <option value="update">Update</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select
+                                        value={cheat.is_allowed_generate}
+                                        onChange={(e) => handleAllowedGenerateChange(cheat.id, e.target.value)}
+                                    >
+                                        <option value={1}>Allowed</option>
+                                        <option value={0}>Forbidden</option>
+                                    </select>
 
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="5">No keys available</td>
+                        </tr>
+                    )}
+                    </tbody>
+                </Table>
+            </Card>
+        </Container>
+    </div>
     )
 }
 

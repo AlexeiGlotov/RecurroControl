@@ -5,7 +5,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"github.com/subosito/gotenv"
 
 	todo "RecurroControl"
 	"RecurroControl/internal/handler"
@@ -21,9 +20,9 @@ func main() {
 		logrus.Fatalf("error configs %s", err.Error())
 	}
 
-	if err := gotenv.Load(); err != nil {
+	/*if err := gotenv.Load(); err != nil {
 		logrus.Fatalf("error env %s", err.Error())
-	}
+	}*/
 
 	db, err := repository2.NewMysqlDB(repository2.Config{
 		Host:     os.Getenv("DB_HOST"),

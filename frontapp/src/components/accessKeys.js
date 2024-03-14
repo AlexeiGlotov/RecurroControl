@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {axiosInstanceWithJWT} from "../api/axios";
-import {Table, Button, Form, Card, Nav,Container} from 'react-bootstrap';
+import {Table, Button, Form, Card,Container} from 'react-bootstrap';
 import {toast} from "react-toastify";
 import { AuthContext } from '../components/AuthContext';
-import {NavLink} from "react-router-dom";
+
 // TO:DO Динамическое добавление в таблицу
 
 
@@ -62,10 +62,6 @@ function AccessKeys() {
 
                         <Form.Group className="me-3" style={{width: '200px'}}>
                             <Form.Control as="select" id="roleSelect" value={sendrole} onChange={handleRoleChange}>
-                                {role === 'admin'  && (
-                                    <Nav.Link as={NavLink} to="/access-keys">Access Keys</Nav.Link>
-                                )}
-
                                 <option value="">select role</option>
                                 {role === 'admin' && (
                                     <>

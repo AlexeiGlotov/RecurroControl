@@ -2,6 +2,9 @@
 import {axiosInstanceWithJWT} from '../api/axios';
 import React, { useState, useEffect } from 'react';
 import {toast} from "react-toastify";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+import { Button, Form, Table, Pagination,Container,Card } from 'react-bootstrap';
 
 
 function LicenseKeys() {
@@ -265,93 +268,109 @@ function LicenseKeys() {
         }
     };
 
+    const cellStyle = {
+        maxWidth: '100px',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap'
+    };
+
     const renderInfoKeyList = () => {
-      return (
-          <div>
-              <div>
-                  <button onClick={handlePrevPage} disabled={currentPage === 1}>Предыдущая</button>
-                  <button onClick={handleNextPage}>Следующая</button>
-                  Страница {currentPage}
-              </div>
+        return (
+            <Container className="my-4">
+                <Card className="p-3 mb-3">
+                    <div className="d-flex align-items-center mb-3">
 
-              <input
-                  type="text"
-                  value={filter}
-                  onChange={handleFilterChange}
-                  placeholder="Клиентский фильтр"
-              />
+                        <Form.Control
+                            className="me-3"
+                            type="text"
+                            value={filter}
+                            onChange={handleFilterChange}
+                            placeholder="client filter"
+                        />
 
-              <input
-                  type="text"
-                  value={serverFilter}
-                  onChange={handleServerFilterChange}
-                  placeholder="Серверный фильтр"
-              />
+                        <Form.Control
+                            className="me-3"
+                            type="text"
+                            value={serverFilter}
+                            onChange={handleServerFilterChange}
+                            placeholder="server filter"
+                        />
+
+                        <Pagination>
+                            <Pagination.Prev onClick={handlePrevPage} disabled={currentPage === 1}/>
+                            <Pagination.Item active>{currentPage}</Pagination.Item>
+                            <Pagination.Next onClick={handleNextPage}/>
+                        </Pagination>
+                    </div>
 
 
-              <table>
-                  <thead>
-                  <tr>
-                      <th>ID</th>
-                      <th>License Key</th>
-                      <th>Cheat</th>
-                      <th>TTL Cheat</th>
-                      <th>Holder</th>
-                      <th>Creator</th>
-                      <th>Date of Creation</th>
-                      <th>Date of Activation</th>
-                      <th>HWID</th>
-                      <th>HWIDK</th>
-                      <th>ResetHWID</th>
-                      <th>Action</th>
-                      <th>Remove</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {filteredLicenseKeys.filter(key => key.is_deleted !== 1).map(key => (
-                      <tr key={key.id}>
-                          <td>{key.id}</td>
-                          <td>{key.license_key}</td>
-                          <td>{key.cheat}</td>
-                          <td>{key.ttl_cheat}</td>
-                          <td>{key.holder}</td>
-                          <td>{key.creator}</td>
-                          <td>{key.date_creation}</td>
-                          <td>{key.date_activation}</td>
-                          <td>{key.hwid}</td>
-                          <td>{key.hwidk}</td>
+                        <Table responsive striped bordered hover>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>License Key</th>
+                                <th>Cheat</th>
+                                <th>TTL Cheat</th>
+                                <th>Holder</th>
+                                <th>Creator</th>
+                                <th>Date of Creation</th>
+                                <th>Date of Activation</th>
+                                <th>HWID</th>
+                                <th>HWIDK</th>
+                                <th>Action</th>
 
-                          <td>
-                              <button
-                                  onClick={() => handleResetHWID(key.id)}
-                                  disabled={key.hwid === null && key.hwidk === null} // Условие для отключения кнопки
-                              >
-                                  Reset
-                              </button>
-                          </td>
-                          <td>
-                              {key.banned === 1 ? (
-                                  <button onClick={() => handleBanUnbanUser(key.id, 0)}>Unban</button>
-                              ) : (
-                                  <button onClick={() => handleBanUnbanUser(key.id, 1)}>Ban</button>
-                              )}
-                          </td>
-                          <td>
-                              <button onClick={() => handleDeleteUser(key.id)}>Delete</button>
-                          </td>
-                      </tr>
-                  ))}
-                  </tbody>
-              </table>
-          </div>
-      )
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {filteredLicenseKeys.filter(key => key.is_deleted !== 1).map(key => (
+                                <tr key={key.id}>
+                                    <td>{key.id}</td>
+                                    <td style={cellStyle}>{key.license_key}</td>
+                                    <td>{key.cheat}</td>
+                                    <td>{key.ttl_cheat}</td>
+                                    <td>{key.holder}</td>
+                                    <td>{key.creator}</td>
+                                    <td>{key.date_creation}</td>
+                                    <td>{key.date_activation}</td>
+                                    <td style={cellStyle}>{key.hwid}</td>
+                                    <td style={cellStyle}>{key.hwidk}</td>
+                                    <td>
+
+
+                                        <Button onClick={() => handleResetHWID(key.id, 0)}
+                                                disabled={key.hwid === null && key.hwidk === null} variant="primary"
+                                                className="me-2"><i
+                                            className="bi bi-server"></i></Button>
+
+
+                                        {key.banned === 1 ? (
+                                            <Button onClick={() => handleBanUnbanUser(key.id, 0)} variant="primary"
+                                                    className="me-2"><i
+                                                className="bi bi-unlock-fill"></i></Button>
+                                        ) : (
+                                            <Button onClick={() => handleBanUnbanUser(key.id, 1)} variant="primary"
+                                                    className="me-2"><i
+                                                className="bi bi-lock-fill"></i></Button>
+                                        )}
+
+
+                                        <Button onClick={() => handleDeleteUser(key.id)} variant="danger"><i
+                                            className="bi bi-trash"></i></Button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </Table>
+                </Card>
+            </Container>
+    )
     };
 
     return (
         <div>
-            <h2>Cheat</h2>
 
-            {renderGenerateCheat()}
+
+           {/* {renderGenerateCheat()}*/}
             {renderInfoKeyList()}
 
         </div>

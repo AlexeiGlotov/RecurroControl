@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { axiosInstanceWithJWT } from "../api/axios";
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-
+import {Card, Container, Table,Button} from "react-bootstrap";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import {AuthContext} from "./AuthContext";
 
 function ManagePanelUsers() {
     const [users, setUsers] = useState([]);
-    const [user, setUser] = useState([]);
+    const { role } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -63,84 +65,68 @@ function ManagePanelUsers() {
         finally {
 
         }
-
     };
-
-    const handleInfoUser = async (userId) => {
-
-        try {
-            const response = await axiosInstanceWithJWT.post('/api/users/getUser', {"id": userId});
-            setUser(response.data.user)
-        }
-        catch(error) {
-            toast.error(`error: ${error.message}`);
-        }
-        finally {
-
-        }
-
-    };
-
-
-    function UserInfoDisplay({ userInfo }) {
-        return (
-            <div>
-            {Object.keys(user).length > 0 && (
-                    // Вывод информации о пользователе, если объект user не пуст
-                    <div>
-                        <p>ID: {userInfo.id}</p>
-                        <p>Login: {userInfo.login}</p>
-                        <p>Role: {userInfo.role}</p>
-                        <p>Keys Generated: {userInfo.keys_generated}</p>
-                        <p>Keys Activated: {userInfo.keys_activated}</p>
-                        <p>Banned: {userInfo.banned === 1 ? 'Yes' : 'No'}</p>
-                        <p>Owner: {userInfo.owner}</p>
-                        <p>Deleted: {userInfo.is_deleted === 1 ? 'Yes' : 'No'}</p>
-                    </div>
-                )
-            }
-            </div>
-
-
-        );
-    }
 
     return (
         <div>
-            <h2>Manage Panel Users</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Login</th>
-                    <th>Info</th>
-                    <th>Block</th>
-                    <th>Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                {users.filter(user => user.is_deleted !== 1).map((user) => (
-                    <tr key={user.id}>
+            <Container className="my-4">
+                <Card className="p-3">
+                    <Table striped bordered hover> {/* Измененный стиль таблицы */}
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Login</th>
+                            <th>Role</th>
+                            <th>Owner</th>
+                            <th>Key-A</th>
+                            <th>Key-G</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {users && users.length > 0 ? (
+                            users.filter(user => user.is_deleted !== 1).map((user) => (
+                                <tr key={user.id}>
+                                    <td>{user.id}</td>
+                                    <td>{user.login}</td>
+                                    <td>{user.role}</td>
+                                    <td>{user.owner}</td>
+                                    <td>{user.keys_activated}</td>
+                                    <td>{user.keys_generated}</td>
+                                    <td>
+                                        {user.banned === 1 ? (
+                                            <Button onClick={() => handleBanUnbanUser(user.id, 0)} variant="primary"  className="me-2"><i
+                                                className="bi bi-unlock-fill"></i></Button>
+                                        ) : (
+                                            <Button onClick={() => handleBanUnbanUser(user.id, 1)} variant="primary"  className="me-2"><i
+                                                className="bi bi-lock-fill"></i></Button>
+                                        )}
 
-                        <td>{user.login}</td>
-                        <td>
-                            <button onClick={() => handleInfoUser(user.id)}>Info</button>
-                        </td>
-                        <td>
-                            {user.banned === 1 ? (
-                                <button onClick={() => handleBanUnbanUser(user.id, 0)}>Unban</button>
-                            ) : (
-                                <button onClick={() => handleBanUnbanUser(user.id, 1)}>Ban</button>
-                            )}
-                        </td>
-                        <td>
-                            <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+                                        {role === 'admin' && (
+                                            <>
+                                                <Button onClick={() => handleDeleteUser(user.id)} variant="danger"><i
+                                                    className="bi bi-trash"></i></Button>
+                                            </>
+                                        )}
+                                    </td>
 
-            <UserInfoDisplay userInfo={user}/>
+
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5">No keys available</td>
+                            </tr>
+                        )}
+                        </tbody>
+                    </Table>
+                </Card>
+            </Container>
+
+
+
+
+
         </div>
 
     );

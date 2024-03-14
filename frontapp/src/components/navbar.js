@@ -14,13 +14,15 @@ function NavigationBar() {
             <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="mr-auto">
                     <Nav.Link as={NavLink} to="/" exact>Dashboard</Nav.Link>
-                    <Nav.Link as={NavLink} to="/license-keys">License Keys</Nav.Link>
-                    <Nav.Link as={NavLink} to="/cheats">Cheats</Nav.Link>
+                    <Nav.Link as={NavLink} to="/license-keys">Generate License Keys</Nav.Link>
+                    <Nav.Link as={NavLink} to="/license-keys-arr">License Key</Nav.Link>
+
                     <Nav.Link as={NavLink} to="/managepanelusers">ManageUsers</Nav.Link>
 
                     {role !== 'salesman' && (
                         <Nav.Link as={NavLink} to="/access-keys">Access Keys</Nav.Link>
                     )}
+                    <Nav.Link as={NavLink} to="/cheats">Cheats</Nav.Link>
                 </Nav>
 
                 <Nav className="ms-auto">
