@@ -13,7 +13,6 @@ function Cheats() {
             try {
                 const response = await axiosInstanceWithJWT.get('/api/cheats/');
                 setCheats(response.data.cheats);
-                toast.success("loading page success")
             } catch (error) {
                 toast.error(`error: ${error.message}`);
             } finally {

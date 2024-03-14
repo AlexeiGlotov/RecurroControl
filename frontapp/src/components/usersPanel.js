@@ -13,7 +13,6 @@ function ManagePanelUsers() {
             try {
                 const response = await axiosInstanceWithJWT.get('/api/users/getUsers');
                 setUsers(response.data.users);
-                toast.success("loading page success")
             } catch (error) {
                 toast.error(`error: ${error.message}`);
             } finally {
