@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Экземпляр Axios для запросов с JWT
 const axiosInstanceWithJWT = axios.create({
-    baseURL: 'http://app-go-app:23678',
+    baseURL: 'http://go-app:23678',
 });
 
 axiosInstanceWithJWT.interceptors.request.use(
@@ -21,7 +21,7 @@ axiosInstanceWithJWT.interceptors.request.use(
 
 // Экземпляр Axios для запросов без JWT
 const axiosInstanceWithoutJWT = axios.create({
-    baseURL: 'http://app-go-app:23678',
+    baseURL: 'http://go-app:23678',
     // Здесь нет необходимости добавлять JWT в заголовки
 });
 
