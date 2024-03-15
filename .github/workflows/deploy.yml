@@ -20,4 +20,4 @@ jobs:
 
       - name: Deploy to server
         run: |
-          run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ lexa@${{ secrets.SERVER_IP }}:/app
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ lexa@${{ secrets.SERVER_IP }}:/app
