@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ lexa@${{ IPSERVER }}:/app
+          run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ lexa@${{ secrets.IPSERVER }}:/app
 
       - name: Deploy with Docker Compose
-        run: ssh -o StrictHostKeyChecking=no lexa@${{ IPSERVER }} "cd /app && docker-compose up -d --build"
+        run: ssh -o StrictHostKeyChecking=no lexa@${{ secrets.IPSERVER }} "cd /app
