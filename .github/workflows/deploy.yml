@@ -20,7 +20,7 @@ jobs:
 
 
       - name: Stop docker , delete app
-        run: ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }}" ./ lexa@${{ secrets.SERVER_IP }} "docker compose down && rm -r /root/app"
+        run: ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }}" lexa@${{ secrets.SERVER_IP }} "docker compose down && rm -r /root/app"
 
       - name: Copy files to server
         run: |
