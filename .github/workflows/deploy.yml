@@ -32,6 +32,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "\
           echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' > /root/app/.env && \
           echo 'DB_HOST=${{ secrets.DB_HOST }}' >> /root/app/.env"
+          echo 'REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}' >> /root/app/.env"
 
       - name: Build docker compose
         run: ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "cd /root/app && docker compose up -d --build"

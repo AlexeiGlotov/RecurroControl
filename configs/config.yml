@@ -2,6 +2,6 @@ port : "23678"
 
 db:
   login : "root"
-  port : "3333"
+  port : "23278"
   dbname : "recurro"
   sslmode : "disable"
