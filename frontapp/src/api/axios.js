@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Экземпляр Axios для запросов с JWT
 const axiosInstanceWithJWT = axios.create({
-    baseURL: 'http://91.215.86.24/:23678',
+    baseURL: 'http://91.215.86.24:23678',
 });
 
 axiosInstanceWithJWT.interceptors.request.use(
@@ -21,7 +21,7 @@ axiosInstanceWithJWT.interceptors.request.use(
 
 // Экземпляр Axios для запросов без JWT
 const axiosInstanceWithoutJWT = axios.create({
-    baseURL: 'http://91.215.86.24/:23678',
+    baseURL: 'http://91.215.86.24:23678',
     // Здесь нет необходимости добавлять JWT в заголовки
 });
 
