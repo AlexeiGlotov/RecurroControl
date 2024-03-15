@@ -22,10 +22,11 @@ jobs:
         run: |
           rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }}" ./ lexa@${{ secrets.SERVER_IP }}:/root/app
 
-      - name: Create .env file on remote server
+      - name: Create and update .env file on remote server
         run: |
-            ssh -o StrictHostKeyChecking=no  -p ${{ secrets.SERVER_PORT }} user@${{ secrets.SERVER_IP }} "echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' > /path/to/your/app/.env"
-            ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} user@${{ secrets.SERVER_IP }} "echo 'DB_HOST=${{ secrets.DB_HOST }}' >> /path/to/your/app/.env"
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} user@${{ secrets.SERVER_IP }} "\
+          echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' > /root/app/.env && \
+          echo 'DB_HOST=${{ secrets.DB_HOST }}' >> /root/app/.env"
 
       - name: Deploy with Docker Compose
         run: ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} user@${{ secrets.SERVER_IP }} "cd /root/app && docker-compose up -d --build"
