@@ -108,8 +108,8 @@ function Cheats() {
                 </Form>
             </Card>
 
-            <Card className="p-3 ">
-            <Table striped bordered hover> {/* Измененный стиль таблицы */}
+            <Card className="p-3">
+                <Table striped bordered hover>
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -126,30 +126,31 @@ function Cheats() {
                                 <td>{cheat.name}</td>
 
                                 <td>
-                                    <select
+                                    <Form.Control
+                                        as="select"
                                         value={cheat.secure}
                                         onChange={(e) => handleSecureChange(cheat.id, e.target.value)}
                                     >
                                         <option value="secure">Secure</option>
                                         <option value="detected">Detected</option>
                                         <option value="update">Update</option>
-                                    </select>
+                                    </Form.Control>
                                 </td>
                                 <td>
-                                    <select
+                                    <Form.Control
+                                        as="select"
                                         value={cheat.is_allowed_generate}
                                         onChange={(e) => handleAllowedGenerateChange(cheat.id, e.target.value)}
                                     >
                                         <option value={1}>Allowed</option>
                                         <option value={0}>Forbidden</option>
-                                    </select>
-
+                                    </Form.Control>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="5">No keys available</td>
+                            <td colSpan="4">No cheats available</td>
                         </tr>
                     )}
                     </tbody>

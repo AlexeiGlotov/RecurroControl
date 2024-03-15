@@ -9,8 +9,6 @@ services:
     ports:
       - '23478:80'
     restart: on-failure
-    networks:
-      - panel
     depends_on:
       - go-app
 
@@ -24,9 +22,3 @@ services:
     env_file:
       - .env
     restart: on-failure
-    networks:
-      - panel
-
-networks:
-  panel:
-    external: true

@@ -18,17 +18,21 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to server
+
+      - name: Stop docker , delete app
+        run: ssh -o StrictHostKeyChecking=no username@yourserver.com "docker compose down && rm -r /root/app && "
+
+      - name: Copy files to server
         run: |
           rsync -avz -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }}" ./ lexa@${{ secrets.SERVER_IP }}:/root/app
 
-      - name: Create and update .env file on remote server
+      - name: Create .env files
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "\
           echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' > /root/app/.env && \
           echo 'DB_HOST=${{ secrets.DB_HOST }}' >> /root/app/.env"
 
-      - name: Deploy with Docker Compose
+      - name: Build docker compose
         run: ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "cd /root/app && docker compose up -d --build"
 
       - name: Check Status
