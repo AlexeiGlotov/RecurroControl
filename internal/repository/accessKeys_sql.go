@@ -67,27 +67,28 @@ func (a *AdmissionSql) GetAccessKey(login, role string) ([]models.AccessKey, err
 	switch role {
 	case models.Admin:
 		query = fmt.Sprintf("SELECT * FROM %s", admissionTable)
-	case models.Distributors:
-		query = fmt.Sprintf("SELECT * FROM %s WHERE owner = '%s''", admissionTable, login)
-	case models.Reseller:
+	case models.Distributors, models.Reseller:
 		query = fmt.Sprintf("SELECT * FROM %s WHERE owner = '%s'", admissionTable, login)
 	default:
 		return nil, errors.New("bad role")
 	}
 
-	row, err := a.db.Query(query)
-
+	rows, err := a.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	for row.Next() {
+	for rows.Next() {
 		temp := models.AccessKey{}
-		err := row.Scan(&temp.Id, &temp.AccessKey, &temp.Owner, &temp.Role, &temp.IsLogin)
-		if err != nil {
+		if err := rows.Scan(&temp.Id, &temp.AccessKey, &temp.Owner, &temp.Role, &temp.IsLogin); err != nil {
 			return nil, err
 		}
 		ra = append(ra, temp)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return ra, nil

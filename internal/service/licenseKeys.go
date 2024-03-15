@@ -17,8 +17,13 @@ func (l *LicenseKeysService) CreateLicenseKeys(keys []models.LicenseKeys) error 
 	return l.repo.CreateLicenseKeys(keys)
 }
 
-func (l *LicenseKeysService) GetLicenseKeys(userID, limit, offset int, filter string) ([]models.LicenseKeys, error) {
-	return l.repo.GetLicenseKeys(userID, limit, offset, filter)
+func (l *LicenseKeysService) GetLicenseKeys(
+	login,
+	role string,
+	limit, offset int,
+	filter string,
+) ([]models.LicenseKeys, error) {
+	return l.repo.GetLicenseKeys(login, role, limit, offset, filter)
 }
 
 func (l *LicenseKeysService) ResetHWID(id int) error {

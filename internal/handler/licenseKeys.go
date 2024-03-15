@@ -94,16 +94,17 @@ func (h *Handler) getLicenseKeys(c *gin.Context) {
 		query = ""
 	}
 
-	offset := (page - 1) * 100
-
-	keys, err := h.services.LicenseKeys.GetLicenseKeys(userID, 100, offset, query)
+	user, err := h.services.Users.GetUser(userID)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if len(keys) == 0 {
-		newErrorResponse(c, http.StatusBadRequest, "bad page")
+	offset := (page - 1) * 100
+
+	keys, err := h.services.LicenseKeys.GetLicenseKeys(user.Login, user.Role, 100, offset, query)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 

@@ -96,7 +96,9 @@ function AccessKeys() {
                     <Table striped bordered hover> {/* Измененный стиль таблицы */}
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            {role === 'admin' && (
+                                <th>ID</th>
+                            )}
                             <th>Access Key</th>
                             <th>Owner</th>
                             <th>Is Login</th>
@@ -107,10 +109,12 @@ function AccessKeys() {
                         {allKeys && allKeys.length > 0 ? (
                             allKeys.map((key) => (
                                 <tr key={key.id}>
+                                    {role === 'admin' && (
                                     <td>{key.id}</td>
+                                    )}
                                     <td>{key.access_key}</td>
                                     <td>{key.owner}</td>
-                                    <td>{key.is_login ? 'Yes' : 'No'}</td>
+                                    <td>{key.is_login}</td>
                                     <td>{key.role}</td>
                                 </tr>
                             ))

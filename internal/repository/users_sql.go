@@ -101,19 +101,10 @@ func (u *UsersSql) GetUsers(userID int) ([]models.User, error) {
 	case models.Admin:
 		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated FROM %s WHERE is_deleted = 0",
 			usersTable)
-	case models.Distributors:
-		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated  FROM %s WHERE owner = '%s' or login ='%s' and is_deleted = 0 ",
+	case models.Distributors, models.Reseller:
+		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated  FROM %s WHERE owner = '%s' or login = '%s' and is_deleted = 0 ",
 			usersTable,
-			user.Login,
-			user.Login)
-	case models.Reseller:
-		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated  FROM %s WHERE login = '%s' or owner = '%s' and is_deleted = 0",
-			usersTable,
-			user.Login)
-	case models.Salesman:
-		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated  FROM %s WHERE login = '%s' and is_deleted = 0",
-			usersTable,
-			user.Login)
+			user.Login, user.Login)
 	default:
 		return nil, errors.New("bad role")
 	}

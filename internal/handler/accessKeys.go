@@ -66,6 +66,7 @@ func (h *Handler) getAccessKey(c *gin.Context) {
 
 	user, err := h.services.Users.GetUser(userID)
 	if err != nil {
+
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

@@ -63,7 +63,7 @@ func (a *CheatSql) GetCheats(role string) ([]models.Cheats, error) {
 	switch role {
 	case models.Admin:
 		query = fmt.Sprintf("SELECT * FROM %s", cheatTable)
-	case models.Distributors:
+	case models.Distributors, models.Reseller:
 		query = fmt.Sprintf("SELECT * FROM %s WHERE is_allowed_generate = 1", cheatTable)
 	default:
 		return nil, errors.New("bad role")

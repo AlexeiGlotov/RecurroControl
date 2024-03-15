@@ -1,0 +1,26 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up SSH connection
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to server
+        run: |
+          run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ lexa@${{ IPSERVER }}:/app
+
+      - name: Deploy with Docker Compose
+        run: ssh -o StrictHostKeyChecking=no lexa@${{ IPSERVER }} "cd /app && docker-compose up -d --build"

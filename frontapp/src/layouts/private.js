@@ -2,12 +2,12 @@ import React,{useContext} from "react";
 import {HashRouter, Route, Routes,Navigate,useLocation} from "react-router-dom";
 import AccessKeys from '../components/accessKeys';
 import Navbar from "../components/navbar";
-import LicenseKeys from "../components/licenseKeys";
 import Dashboard from "../components/dashboard";
 import Cheats from "../components/cheats";
 import { AuthContext } from '../components/AuthContext';
 import ManagePanelUsers from "../components/usersPanel";
-import LicenseKeysArr from "../components/licenseKeysArr";
+import GenerateLicenseKeys from "../components/generateLicenseKeys";
+import ListLicenseKeys from "../components/listLicenseKeys";
 
 // Компонент ProtectedRoute
 const ProtectedRoute = ({ children }) => {
@@ -28,10 +28,10 @@ function PrivateRoutes() {
                 <Navbar></Navbar>
                 <div className="content">
                     <Routes>
-                        <Route path='/' element={<Dashboard/>}/>
-                        <Route path='/license-keys' element={<LicenseKeys/>}/>
-                        <Route path='/license-keys-arr' element={<LicenseKeysArr/>}/>
-                        <Route path='/access-keys' element={<AccessKeys/>}/>
+                        <Route path='/' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                        <Route path='/list-license-keys' element={<ProtectedRoute><ListLicenseKeys /></ProtectedRoute>} />
+                        <Route path='/generate-license-keys' element={<ProtectedRoute><GenerateLicenseKeys /></ProtectedRoute>} />
+                        <Route path='/access-keys' element={<ProtectedRoute><AccessKeys /></ProtectedRoute>} />
                         <Route path="/cheats"  element={<ProtectedRoute><Cheats /></ProtectedRoute>} />
                         <Route path="/managepanelusers"  element={<ProtectedRoute><ManagePanelUsers /></ProtectedRoute>} />
                     </Routes>

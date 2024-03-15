@@ -8,7 +8,7 @@ import {AuthContext} from "./AuthContext";
 
 function ManagePanelUsers() {
     const [users, setUsers] = useState([]);
-    const { role } = useContext(AuthContext);
+    const {id,role } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -74,7 +74,9 @@ function ManagePanelUsers() {
                     <Table striped bordered hover> {/* Измененный стиль таблицы */}
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            {role === 'admin' && (
+                                <th>ID</th>
+                            )}
                             <th>Login</th>
                             <th>Role</th>
                             <th>Owner</th>
@@ -87,7 +89,9 @@ function ManagePanelUsers() {
                         {users && users.length > 0 ? (
                             users.filter(user => user.is_deleted !== 1).map((user) => (
                                 <tr key={user.id}>
-                                    <td>{user.id}</td>
+                                    {role === 'admin' && (
+                                        <td>{user.id}</td>
+                                    )}
                                     <td>{user.login}</td>
                                     <td>{user.role}</td>
                                     <td>{user.owner}</td>
@@ -95,11 +99,23 @@ function ManagePanelUsers() {
                                     <td>{user.keys_generated}</td>
                                     <td>
                                         {user.banned === 1 ? (
-                                            <Button onClick={() => handleBanUnbanUser(user.id, 0)} variant="primary"  className="me-2"><i
-                                                className="bi bi-unlock-fill"></i></Button>
+                                            <Button
+                                                onClick={() => handleBanUnbanUser(user.id, 0)}
+                                                variant="primary"
+                                                className="me-2"
+                                                disabled={user.id === id} // Отключаем кнопку, если user.id равен id
+                                            >
+                                                <i className="bi bi-unlock-fill"></i>
+                                            </Button>
                                         ) : (
-                                            <Button onClick={() => handleBanUnbanUser(user.id, 1)} variant="primary"  className="me-2"><i
-                                                className="bi bi-lock-fill"></i></Button>
+                                            <Button
+                                                onClick={() => handleBanUnbanUser(user.id, 1)}
+                                                variant="primary"
+                                                className="me-2"
+                                                disabled={user.id === id} // Отключаем кнопку, если user.id равен id
+                                            >
+                                                <i className="bi bi-lock-fill"></i>
+                                            </Button>
                                         )}
 
                                         {role === 'admin' && (
@@ -115,7 +131,7 @@ function ManagePanelUsers() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="5">No keys available</td>
+                                <td colSpan="7">No keys available</td>
                             </tr>
                         )}
                         </tbody>

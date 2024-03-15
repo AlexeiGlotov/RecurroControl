@@ -49,7 +49,12 @@ func buildQuery(filters []string, value string) string {
 	return fmt.Sprintf("%s", whereClause)
 }
 
-func (l *LicenseKeysSql) GetLicenseKeys(userID, limit, offset int, filter string) ([]models.LicenseKeys, error) {
+func (l *LicenseKeysSql) GetLicenseKeys(
+	login,
+	role string,
+	limit, offset int,
+	filter string,
+) ([]models.LicenseKeys, error) {
 	var cheats []models.LicenseKeys
 
 	or := buildQuery([]string{
@@ -62,12 +67,21 @@ func (l *LicenseKeysSql) GetLicenseKeys(userID, limit, offset int, filter string
 		"date_activation",
 		"hwid",
 		"hwidk",
-	},
-		filter,
-	)
+	}, filter)
 
-	query := fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation,date_activation,hwid,hwidk,banned,is_deleted FROM %s WHERE %s LIMIT ? OFFSET ?",
-		licenseKeysTable, or)
+	var query string
+	switch role {
+	case models.Admin:
+		query = fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation, hwid, hwidk, banned, is_deleted FROM %s WHERE %s LIMIT ? OFFSET ?",
+			licenseKeysTable, or)
+	case models.Distributors, models.Reseller:
+		query = fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation, hwid, hwidk, banned, is_deleted FROM %s WHERE (holder = '%s' or creator = '%s') AND (%s)  LIMIT ? OFFSET ?",
+			licenseKeysTable, login, login, or)
+	case models.Salesman:
+		query = fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation, hwid, hwidk, banned, is_deleted FROM %s WHERE (holder = '%s') AND (%s)  LIMIT ? OFFSET ?",
+			licenseKeysTable, login, or)
+	}
+
 	rows, err := l.db.Query(query, limit, offset)
 	if err != nil {
 		return nil, err
