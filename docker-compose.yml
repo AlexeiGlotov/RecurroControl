@@ -28,5 +28,5 @@ services:
       - panel
 
 networks:
-  mynetwork:
+  panel:
     external: true
