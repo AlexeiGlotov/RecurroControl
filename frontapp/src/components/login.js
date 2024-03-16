@@ -3,7 +3,7 @@ import React, { useState,useContext } from 'react';
 import { axiosInstanceWithoutJWT } from '../api/axios';
 import { AuthContext } from './AuthContext';
 import { useNavigate,Link } from 'react-router-dom';
-import {toast} from "react-toastify";
+import handleError from '../utils/errorHandler';
 
 import { Container, Form, Card, Button } from 'react-bootstrap';
 
@@ -21,19 +21,7 @@ const Login = () => {
             login(token)
             navigate('/');
         } catch (error) {
-            switch (error.response.data.message) {
-                case "not all fields are filled in":
-                    toast.error("not all fields are filled in");
-                    break
-                case "bad len login":
-                    toast.error("bad len login 4-20");
-                    break
-                case "bad len password":
-                    toast.error("bad len password 6-20");
-                    break
-                default:
-                    toast.error("server error");
-            }
+            handleError(error);
         }
     };
 

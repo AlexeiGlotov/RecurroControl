@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"RecurroControl/models"
 )
 
 func (h *Handler) getUsers(c *gin.Context) {
@@ -12,13 +14,19 @@ func (h *Handler) getUsers(c *gin.Context) {
 		return
 	}
 
-	cheats, err := h.services.Users.GetUsers(userID)
+	user, err := h.services.Users.GetUser(userID)
+	if user.Role == models.Salesman {
+		newErrorResponse(c, http.StatusForbidden, err, ErrAccessDenied)
+		return
+	}
+
+	users, err := h.services.Users.GetUsers(userID)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{"users": cheats})
+	c.JSON(http.StatusOK, map[string]interface{}{"users": users})
 }
 
 type inputUserAction struct {
@@ -26,7 +34,7 @@ type inputUserAction struct {
 }
 
 func (h *Handler) getUser(c *gin.Context) {
-	_, err := getUserId(c)
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
@@ -34,6 +42,12 @@ func (h *Handler) getUser(c *gin.Context) {
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if user.Role == models.Salesman {
+		newErrorResponse(c, http.StatusForbidden, err, ErrAccessDenied)
 		return
 	}
 
@@ -47,7 +61,7 @@ func (h *Handler) getUser(c *gin.Context) {
 }
 
 func (h *Handler) ban(c *gin.Context) {
-	_, err := getUserId(c)
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
@@ -55,6 +69,12 @@ func (h *Handler) ban(c *gin.Context) {
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if user.Role == models.Salesman {
+		newErrorResponse(c, http.StatusForbidden, err, ErrAccessDenied)
 		return
 	}
 
@@ -68,7 +88,7 @@ func (h *Handler) ban(c *gin.Context) {
 }
 
 func (h *Handler) unban(c *gin.Context) {
-	_, err := getUserId(c)
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
@@ -76,6 +96,12 @@ func (h *Handler) unban(c *gin.Context) {
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if user.Role == models.Salesman {
+		newErrorResponse(c, http.StatusForbidden, err, ErrAccessDenied)
 		return
 	}
 
@@ -89,7 +115,7 @@ func (h *Handler) unban(c *gin.Context) {
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	_, err := getUserId(c)
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
@@ -97,6 +123,12 @@ func (h *Handler) delete(c *gin.Context) {
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if user.Role != models.Admin {
+		newErrorResponse(c, http.StatusForbidden, err, ErrAccessDenied)
 		return
 	}
 

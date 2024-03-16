@@ -1,11 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {axiosInstanceWithJWT} from "../api/axios";
 import {Table, Button, Form, Card,Container} from 'react-bootstrap';
-import {toast} from "react-toastify";
 import { AuthContext } from '../components/AuthContext';
+import handleError from '../utils/errorHandler';
 
 // TO:DO Динамическое добавление в таблицу
-
 
 function AccessKeys() {
 
@@ -28,7 +27,7 @@ function AccessKeys() {
                 const response = await axiosInstanceWithJWT.get('/api/access-keys/');
                 setAllKeys(response.data.key);
             } catch (error) {
-                toast.error(`error: ${error.message}`);
+                handleError(error);
             } finally {
                 setIsLoadingGET(false)
             }
@@ -47,9 +46,13 @@ function AccessKeys() {
             const [licenseResponse] = await Promise.all([
                 await axiosInstanceWithJWT.post('/api/access-keys/',dataToSend),
             ]);
+
+            const response = await axiosInstanceWithJWT.get('/api/access-keys/');
+            setAllKeys(response.data.key);
+
             setKeys(licenseResponse.data.key)
         } catch (error) {
-            toast.error(`error: ${error.message}`);
+            handleError(error);
         } finally {
             setIsLoading(false);
         }
@@ -123,7 +126,6 @@ function AccessKeys() {
                             ))
                         ) : (
                            <>
-
                                {
                                    isLoadingGET ? (
                                        <tr>
@@ -135,7 +137,6 @@ function AccessKeys() {
                                        </tr>
                                    )
                                }
-
                            </>
                         )}
                         </tbody>

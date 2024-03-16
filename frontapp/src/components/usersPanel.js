@@ -1,23 +1,26 @@
 import React, {useState, useEffect, useContext} from 'react';
 import { axiosInstanceWithJWT } from "../api/axios";
-import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import {Card, Container, Table,Button} from "react-bootstrap";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import {AuthContext} from "./AuthContext";
+import handleError from '../utils/errorHandler';
 
 function ManagePanelUsers() {
     const [users, setUsers] = useState([]);
-    const {id,role } = useContext(AuthContext);
+    const {role } = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true)
         const fetchUsers = async () => {
             try {
                 const response = await axiosInstanceWithJWT.get('/api/users/getUsers');
                 setUsers(response.data.users);
             } catch (error) {
-                toast.error(`error: ${error.message}`);
+                handleError(error);
             } finally {
+                setIsLoading(true)
             }
         };
 
@@ -33,7 +36,7 @@ function ManagePanelUsers() {
                     user.id === userId ? { ...user, banned: 0 } : user));
             }
             catch(error) {
-                toast.error(`error: ${error.message}`);
+                handleError(error);
             }
             finally {
 
@@ -45,12 +48,11 @@ function ManagePanelUsers() {
                     user.id === userId ? { ...user, banned: 1 } : user));
             }
             catch(error) {
-                toast.error(`error: ${error.message}`);
+                handleError(error);
             }
             finally {
             }
         }
-        // Отправка запроса на сервер для ban/unban
     };
 
     const handleDeleteUser = async (userId) => {
@@ -60,7 +62,7 @@ function ManagePanelUsers() {
                 user.id === userId ? { ...user, is_deleted: 1 } : user));
         }
         catch(error) {
-            toast.error(`error: ${error.message}`);
+            handleError(error);
         }
         finally {
 
@@ -101,18 +103,16 @@ function ManagePanelUsers() {
                                         {user.banned === 1 ? (
                                             <Button
                                                 onClick={() => handleBanUnbanUser(user.id, 0)}
-                                                variant="primary"
+                                                variant="outline-success"
                                                 className="me-2"
-                                                disabled={user.id === id} // Отключаем кнопку, если user.id равен id
                                             >
                                                 <i className="bi bi-unlock-fill"></i>
                                             </Button>
                                         ) : (
                                             <Button
                                                 onClick={() => handleBanUnbanUser(user.id, 1)}
-                                                variant="primary"
+                                                variant="outline-danger"
                                                 className="me-2"
-                                                disabled={user.id === id} // Отключаем кнопку, если user.id равен id
                                             >
                                                 <i className="bi bi-lock-fill"></i>
                                             </Button>
@@ -130,21 +130,27 @@ function ManagePanelUsers() {
                                 </tr>
                             ))
                         ) : (
-                            <tr>
-                                <td colSpan="7">No keys available</td>
-                            </tr>
+                            <>
+
+                                {
+                                    isLoading ? (
+                                        <tr>
+                                            <td colSpan="7">Loading.....</td>
+                                        </tr>
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="7">No keys available</td>
+                                        </tr>
+                                    )
+                                }
+
+                            </>
                         )}
                         </tbody>
                     </Table>
                 </Card>
             </Container>
-
-
-
-
-
         </div>
-
     );
 }
 
