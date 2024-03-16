@@ -79,6 +79,16 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
+	if len(input.Login) > 20 || len(input.Login) < 4 {
+		newErrorResponse(c, http.StatusBadRequest, nil, "bad len login")
+		return
+	}
+
+	if len(input.Password) > 20 || len(input.Password) < 6 {
+		newErrorResponse(c, http.StatusBadRequest, nil, "bad len password")
+		return
+	}
+
 	token, err := h.services.Authorization.GenerateToken(input.Login, input.Password)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)

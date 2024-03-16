@@ -61,19 +61,26 @@ func (a *AdmissionSql) CreateAccessKey(userID int, role string) (string, error) 
 
 func (a *AdmissionSql) GetAccessKey(login, role string) ([]models.AccessKey, error) {
 
-	ra := []models.AccessKey{}
 	var query string
 
 	switch role {
 	case models.Admin:
-		query = fmt.Sprintf("SELECT * FROM %s", admissionTable)
-	case models.Distributors, models.Reseller:
-		query = fmt.Sprintf("SELECT * FROM %s WHERE owner = '%s'", admissionTable, login)
+		query = "SELECT * FROM " + admissionTable
+		return a.executeAccessKeyQuery(query, nil)
+	case models.Distributors:
+		query = "SELECT * FROM " + admissionTable + " WHERE owner = ?"
+		return a.executeAccessKeyQueryForDistributor(query, login)
+	case models.Reseller:
+		query = "SELECT * FROM " + admissionTable + " WHERE owner = ?"
+		return a.executeAccessKeyQuery(query, []interface{}{login})
 	default:
 		return nil, errors.New("bad role")
 	}
+}
 
-	rows, err := a.db.Query(query)
+func (a *AdmissionSql) executeAccessKeyQuery(query string, args []interface{}) ([]models.AccessKey, error) {
+	var ra []models.AccessKey
+	rows, err := a.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,9 +94,28 @@ func (a *AdmissionSql) GetAccessKey(login, role string) ([]models.AccessKey, err
 		ra = append(ra, temp)
 	}
 
-	if err = rows.Err(); err != nil {
+	return ra, rows.Err()
+}
+
+func (a *AdmissionSql) executeAccessKeyQueryForDistributor(query string, login string) ([]models.AccessKey, error) {
+	keys, err := a.executeAccessKeyQuery(query, []interface{}{login})
+	if err != nil {
 		return nil, err
 	}
 
-	return ra, nil
+	var allKeys []models.AccessKey
+	allKeys = append(allKeys, keys...)
+
+	for _, key := range keys {
+		if key.IsLogin != nil && *key.IsLogin != login {
+			moreKeys, err := a.executeAccessKeyQuery(query, []interface{}{*key.IsLogin})
+			if err != nil {
+				return nil, err
+			}
+			allKeys = append(allKeys, moreKeys...)
+			login = *key.IsLogin
+		}
+	}
+
+	return allKeys, nil
 }

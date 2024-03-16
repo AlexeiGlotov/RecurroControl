@@ -70,6 +70,11 @@ func (h *Handler) getAccessKey(c *gin.Context) {
 		return
 	}
 
+	if user.Role == models.Salesman {
+		newErrorResponse(c, http.StatusUnauthorized, err, ErrAccessDenied)
+		return
+	}
+
 	key, err := h.services.AccessKeys.GetAccessKey(user.Login, user.Role)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)

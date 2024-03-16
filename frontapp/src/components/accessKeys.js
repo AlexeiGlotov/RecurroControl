@@ -11,6 +11,7 @@ function AccessKeys() {
 
     const [sendrole, setRole] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingGET, setIsLoadingGET] = useState(false);
     const [keys, setKeys] = useState(null);
 
     const [allKeys, setAllKeys] = useState(null);
@@ -22,12 +23,14 @@ function AccessKeys() {
 
     useEffect(() => {
         const fetchUsers = async () => {
+            setIsLoadingGET(true)
             try {
                 const response = await axiosInstanceWithJWT.get('/api/access-keys/');
                 setAllKeys(response.data.key);
             } catch (error) {
                 toast.error(`error: ${error.message}`);
             } finally {
+                setIsLoadingGET(false)
             }
         };
 
@@ -119,9 +122,21 @@ function AccessKeys() {
                                 </tr>
                             ))
                         ) : (
-                            <tr>
-                                <td colSpan="5">No keys available</td>
-                            </tr>
+                           <>
+
+                               {
+                                   isLoadingGET ? (
+                                       <tr>
+                                           <td colSpan="5">Loading.....</td>
+                                       </tr>
+                                   ) : (
+                                       <tr>
+                                           <td colSpan="5">No keys available</td>
+                                       </tr>
+                                   )
+                               }
+
+                           </>
                         )}
                         </tbody>
                     </Table>

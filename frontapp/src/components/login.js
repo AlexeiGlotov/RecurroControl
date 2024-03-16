@@ -21,7 +21,19 @@ const Login = () => {
             login(token)
             navigate('/');
         } catch (error) {
-            toast.error(`error: ${error.message}`);
+            switch (error.response.data.message) {
+                case "not all fields are filled in":
+                    toast.error("not all fields are filled in");
+                    break
+                case "bad len login":
+                    toast.error("bad len login 4-20");
+                    break
+                case "bad len password":
+                    toast.error("bad len password 6-20");
+                    break
+                default:
+                    toast.error("server error");
+            }
         }
     };
 

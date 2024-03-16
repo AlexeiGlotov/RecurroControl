@@ -13,7 +13,7 @@ function RegistrationForm() {
     const handleRegistation = async (event) => {
         event.preventDefault();
         if (formData.password !== formData.repassword) {
-            toast.error(`password != repassword`);
+            toast.error(`check the repassword != passwords are correct`);
             return;
         }
         try {
