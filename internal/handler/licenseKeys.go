@@ -34,18 +34,18 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 
 	var inputKeys models.InputCreate
 	if err := c.BindJSON(&inputKeys); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	user, err := h.services.Users.GetUser(userID)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
 		return
 	}
 
 	if inputKeys.CountKeys > 50 {
-		newErrorResponse(c, http.StatusBadRequest, "Превышено максимальное количество ключей")
+		newErrorResponse(c, http.StatusBadRequest, err, "maximum 50 keys")
 		return
 	}
 
@@ -65,7 +65,7 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 
 	err = h.services.LicenseKeys.CreateLicenseKeys(licenseKeys)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (h *Handler) getLicenseKeys(c *gin.Context) {
 	}
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "неверный формат страницы"})
+		newErrorResponse(c, http.StatusBadRequest, err, "invalid page format")
 		return
 	}
 
@@ -96,7 +96,7 @@ func (h *Handler) getLicenseKeys(c *gin.Context) {
 
 	user, err := h.services.Users.GetUser(userID)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
 		return
 	}
 
@@ -104,7 +104,7 @@ func (h *Handler) getLicenseKeys(c *gin.Context) {
 
 	keys, err := h.services.LicenseKeys.GetLicenseKeys(user.Login, user.Role, 100, offset, query)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
 		return
 	}
 
@@ -123,13 +123,14 @@ func (h *Handler) licenseKeyResetHWID(c *gin.Context) {
 
 	var input inputAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.LicenseKeys.ResetHWID(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)
@@ -143,13 +144,14 @@ func (h *Handler) licenseKeyBan(c *gin.Context) {
 
 	var input inputAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.LicenseKeys.Ban(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)
@@ -163,13 +165,14 @@ func (h *Handler) licenseKeyUnban(c *gin.Context) {
 
 	var input inputAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.LicenseKeys.Unban(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)
@@ -183,13 +186,14 @@ func (h *Handler) licenseKeyDelete(c *gin.Context) {
 
 	var input inputAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.LicenseKeys.Delete(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)

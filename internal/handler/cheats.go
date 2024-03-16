@@ -19,7 +19,8 @@ func (h *Handler) getCheat(c *gin.Context) {
 
 	cheats, err := h.services.Cheats.GetCheats(user.Role)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"cheats": cheats})
@@ -33,13 +34,14 @@ func (h *Handler) createCheat(c *gin.Context) {
 
 	var cheat models.Cheats
 	if err := c.BindJSON(&cheat); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	id, err := h.services.Cheats.CreateCheat(&cheat)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"id": id})
@@ -53,13 +55,14 @@ func (h *Handler) updateCheat(c *gin.Context) {
 
 	var cheat models.Cheats
 	if err := c.BindJSON(&cheat); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.Cheats.UpdateCheat(&cheat)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)

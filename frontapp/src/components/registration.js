@@ -23,7 +23,28 @@ function RegistrationForm() {
                 toast.success("Successful registration")
 
         } catch (error) {
-            toast.error(`error: ${error.message}`);
+            switch (error.response.data.message) {
+                case "not all fields are filled in":
+                    toast.error("not all fields are filled in");
+                    break
+                case "bad len login":
+                    toast.error("bad len login 4-20");
+                    break
+                case "bad len password":
+                    toast.error("bad len password 6-20");
+                    break
+                case "check the repassword != passwords are correct":
+                    toast.error("check the repassword != passwords are correct");
+                    break
+                case "invalid key":
+                    toast.error("check access key are correct");
+                    break
+                case "enter another login":
+                    toast.error("enter another login");
+                    break
+                default:
+                    toast.error("server error");
+            }
         }
     };
 

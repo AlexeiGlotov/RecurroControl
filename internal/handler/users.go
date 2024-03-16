@@ -14,7 +14,8 @@ func (h *Handler) getUsers(c *gin.Context) {
 
 	cheats, err := h.services.Users.GetUsers(userID)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"users": cheats})
@@ -32,13 +33,14 @@ func (h *Handler) getUser(c *gin.Context) {
 
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	cheats, err := h.services.Users.GetUser(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"user": cheats})
@@ -52,13 +54,14 @@ func (h *Handler) ban(c *gin.Context) {
 
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.Users.Ban(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)
@@ -72,13 +75,14 @@ func (h *Handler) unban(c *gin.Context) {
 
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.Users.Unban(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)
@@ -92,13 +96,14 @@ func (h *Handler) delete(c *gin.Context) {
 
 	var input inputUserAction
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
 		return
 	}
 
 	err = h.services.Users.Delete(input.Id)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
 	}
 
 	c.Status(http.StatusOK)

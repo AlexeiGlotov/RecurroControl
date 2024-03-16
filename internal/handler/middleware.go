@@ -13,54 +13,22 @@ const (
 	userCtx             = "userID"
 )
 
-func (h *Handler) ensureNotLoggedIn() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if _, err := c.Cookie("jwt"); err == nil {
-			c.Redirect(http.StatusSeeOther, "/")
-			c.Abort()
-			return
-		}
-		c.Next()
-	}
-}
-
-func (h *Handler) authMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		tokenString, err := c.Cookie("jwt")
-		if err != nil {
-			//c.JSON(http.StatusMovedPermanently, gin.H{"error": "Unauthorized"})
-			c.Redirect(301, "/login")
-			c.Abort()
-			return
-		}
-
-		_, err = h.services.Authorization.ParseToken(tokenString)
-		if err != nil {
-			//newErrorResponse(c, http.StatusMovedPermanently, err.Error())
-			c.Redirect(301, "/login")
-			return
-		}
-
-		c.Next()
-	}
-}
-
 func (h *Handler) userIdentity(c *gin.Context) {
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {
-		newErrorResponse(c, http.StatusUnauthorized, "empty auth header")
+		newErrorResponse(c, http.StatusUnauthorized, errors.New("EPMTY AUTH HEADER"), "empty auth header")
 		return
 	}
 
 	headerParts := strings.Split(header, " ")
 	if len(headerParts) != 2 {
-		newErrorResponse(c, http.StatusUnauthorized, "invalid auth header")
+		newErrorResponse(c, http.StatusUnauthorized, errors.New("INVALID AUTH HEADER"), "invalid auth header")
 		return
 	}
 
 	user, err := h.services.Authorization.ParseToken(headerParts[1])
 	if err != nil {
-		newErrorResponse(c, http.StatusUnauthorized, err.Error())
+		newErrorResponse(c, http.StatusUnauthorized, err, "unauthorized")
 		return
 	}
 
@@ -70,13 +38,19 @@ func (h *Handler) userIdentity(c *gin.Context) {
 func getUserId(c *gin.Context) (int, error) {
 	id, ok := c.Get(userCtx)
 	if !ok {
-		newErrorResponse(c, http.StatusInternalServerError, "user id not found")
+		newErrorResponse(c,
+			http.StatusInternalServerError,
+			errors.New("TOKEN - USER ID NOT FOUND"),
+			"user id not found")
 		return 0, errors.New("user id not found")
 	}
 
 	userID, ok := id.(int)
 	if !ok {
-		newErrorResponse(c, http.StatusInternalServerError, "user id is of invalid type")
+		newErrorResponse(c,
+			http.StatusInternalServerError,
+			errors.New("TOKEN - USER ID INVALID TYPE"),
+			"user id is of invalid type")
 		return 0, errors.New("user id not found")
 	}
 	return userID, nil
