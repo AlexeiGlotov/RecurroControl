@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"RecurroControl/models"
 )
@@ -23,11 +24,12 @@ func (l *LicenseKeysSql) CreateLicenseKeys(keys []models.LicenseKeys) error {
 	var valueArgs []interface{}
 
 	for _, key := range keys {
-		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?)")
-		valueArgs = append(valueArgs, key.LicenseKeys, key.Cheat, key.TTLCheat, key.Holder, key.Creator)
+		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?)")
+		valueArgs = append(valueArgs, key.LicenseKeys, key.Cheat, key.TTLCheat, key.Holder, key.Creator, key.Notes)
 	}
 
-	stmt := fmt.Sprintf("INSERT INTO %s (license_key, cheat, ttl_cheat, holder, creator) VALUES %s",
+	stmt := fmt.Sprintf("INSERT INTO"+
+		" %s (license_key, cheat, ttl_cheat, holder, creator,notes) VALUES %s",
 		licenseKeysTable, strings.Join(valueStrings, ","))
 
 	_, err := l.db.Exec(stmt, valueArgs...)
@@ -38,51 +40,29 @@ func (l *LicenseKeysSql) CreateLicenseKeys(keys []models.LicenseKeys) error {
 	return nil
 }
 
-func buildQuery(filters []string, value string) string {
-
-	var conditions []string
-	for _, iter := range filters {
-		conditions = append(conditions, fmt.Sprintf("%s LIKE '%%%s%%'", iter, value))
-	}
-
-	whereClause := strings.Join(conditions, " OR ")
-	return fmt.Sprintf("%s", whereClause)
-}
-
-func (l *LicenseKeysSql) GetLicenseKeys(
-	login,
-	role string,
-	limit, offset int,
-	filter string,
-) ([]models.LicenseKeys, error) {
+func (l *LicenseKeysSql) GetLicenseKeys(limit, offset int, filter string) ([]models.LicenseKeys, error) {
 	var cheats []models.LicenseKeys
-
-	or := buildQuery([]string{
-		"license_key",
-		"cheat",
-		"ttl_cheat",
-		"holder",
-		"creator",
-		"date_creation",
-		"date_activation",
-		"hwid",
-		"hwidk",
-	}, filter)
-
 	var query string
-	switch role {
-	case models.Admin:
-		query = fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation, hwid, hwidk, banned, is_deleted FROM %s WHERE %s LIMIT ? OFFSET ?",
-			licenseKeysTable, or)
-	case models.Distributors, models.Reseller:
-		query = fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation, hwid, hwidk, banned, is_deleted FROM %s WHERE (holder = '%s' or creator = '%s') AND (%s)  LIMIT ? OFFSET ?",
-			licenseKeysTable, login, login, or)
-	case models.Salesman:
-		query = fmt.Sprintf("SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation, hwid, hwidk, banned, is_deleted FROM %s WHERE (holder = '%s') AND (%s)  LIMIT ? OFFSET ?",
-			licenseKeysTable, login, or)
+	var rows *sql.Rows
+	var err error
+
+	if filter == "" {
+		query = fmt.Sprintf(`
+			SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation,hwid, hwidk, 
+			       banned, is_deleted,notes 
+			FROM license_keys LIMIT ? OFFSET ?`)
+	} else {
+		query = fmt.Sprintf(`
+			SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation,hwid, hwidk, 
+			       banned, is_deleted,notes 
+			FROM license_keys 
+			WHERE %s LIMIT ? OFFSET ?`, filter)
+
+		fmt.Println(query)
 	}
 
-	rows, err := l.db.Query(query, limit, offset)
+	rows, err = l.db.Query(query, limit, offset)
+
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +81,8 @@ func (l *LicenseKeysSql) GetLicenseKeys(
 			&temp.HWID,
 			&temp.HWIDK,
 			&temp.Banned,
-			&temp.IsDeleted); err != nil {
+			&temp.IsDeleted,
+			&temp.Notes); err != nil {
 			return nil, err
 		}
 		cheats = append(cheats, temp)
@@ -114,8 +95,59 @@ func (l *LicenseKeysSql) GetLicenseKeys(
 	return cheats, nil
 }
 
+func (l *LicenseKeysSql) GetCustomLicenseKeys(login string, date time.Time) (*models.InfoKeyDashboard, error) {
+
+	var dashboard models.InfoKeyDashboard
+
+	query := fmt.Sprintf(`
+		SELECT COUNT(*) AS created, COUNT(date_activation) AS activated ,COALESCE(SUM(banned), 0) AS banned
+		FROM 
+			license_keys 
+		WHERE 
+			(holder = '%s' OR creator = '%s') 
+			AND DATE(date_creation) = '%s';
+	`, login, login, date.Format("2006-01-02"))
+
+	row := l.db.QueryRow(query)
+	err := row.Scan(&dashboard.CountAll, &dashboard.CountActive, &dashboard.CountBan)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &dashboard, nil
+}
+
+func (l *LicenseKeysSql) BanOfDate(login string, date time.Time) error {
+	query := fmt.Sprintf(`
+		UPDATE license_keys 
+		SET banned = 1
+		WHERE 
+    	(holder = '%s' OR creator = '%s') 
+    	AND DATE(date_creation) = '%s'`, login, login, date.Format("2006-01-02"))
+
+	result, err := l.db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows updated")
+	}
+	return nil
+}
+
 func (l *LicenseKeysSql) Ban(id int) error {
-	query := fmt.Sprintf("UPDATE %s SET `banned` = 1 WHERE id = ?", licenseKeysTable)
+	query := fmt.Sprintf("UPDATE %s "+
+		"SET `banned` = 1 WHERE id = ?", licenseKeysTable)
 
 	result, err := l.db.Exec(query, id)
 	if err != nil {
@@ -134,7 +166,8 @@ func (l *LicenseKeysSql) Ban(id int) error {
 }
 
 func (l *LicenseKeysSql) Unban(id int) error {
-	query := fmt.Sprintf("UPDATE %s SET `banned` = 0 WHERE id = ?", licenseKeysTable)
+	query := fmt.Sprintf("UPDATE %s "+
+		"SET `banned` = 0 WHERE id = ?", licenseKeysTable)
 
 	result, err := l.db.Exec(query, id)
 	if err != nil {
@@ -153,7 +186,8 @@ func (l *LicenseKeysSql) Unban(id int) error {
 }
 
 func (l *LicenseKeysSql) Delete(id int) error {
-	query := fmt.Sprintf("UPDATE %s SET `is_deleted` = 1 WHERE id = ?", licenseKeysTable)
+	query := fmt.Sprintf("UPDATE %s "+
+		"SET `is_deleted` = 1 WHERE id = ?", licenseKeysTable)
 
 	result, err := l.db.Exec(query, id)
 	if err != nil {
@@ -172,7 +206,8 @@ func (l *LicenseKeysSql) Delete(id int) error {
 }
 
 func (l *LicenseKeysSql) ResetHWID(id int) error {
-	query := fmt.Sprintf("UPDATE %s SET `hwid` = null , hwidk = null WHERE id = ?", licenseKeysTable)
+	query := fmt.Sprintf("UPDATE %s "+
+		"SET `hwid` = null , hwidk = null WHERE id = ?", licenseKeysTable)
 
 	result, err := l.db.Exec(query, id)
 	if err != nil {

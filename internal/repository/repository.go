@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"time"
 
 	"RecurroControl/models"
 )
@@ -31,6 +32,7 @@ type Users interface {
 	Ban(userID int) error
 	Unban(userID int) error
 	Delete(userID int) error
+	GetUsersAll() ([]models.User, error)
 }
 
 type Cheats interface {
@@ -41,9 +43,11 @@ type Cheats interface {
 
 type LicenseKeys interface {
 	CreateLicenseKeys(keys []models.LicenseKeys) error
-	GetLicenseKeys(login, role string, limit, offset int, filter string) ([]models.LicenseKeys, error)
+	GetLicenseKeys(limit, offset int, filter string) ([]models.LicenseKeys, error)
+	GetCustomLicenseKeys(login string, date time.Time) (*models.InfoKeyDashboard, error)
 	Delete(id int) error
 	Ban(id int) error
+	BanOfDate(login string, date time.Time) error
 	Unban(id int) error
 	ResetHWID(id int) error
 }

@@ -88,6 +88,32 @@ func (u *UsersSql) GetUser(userID int) (*models.User, error) {
 	return &user, nil
 }
 
+func (u *UsersSql) GetUsersAll() ([]models.User, error) {
+
+	var data []models.User
+
+	query := "SELECT id, login, role, banned, owner, key_generated, key_activated FROM " + usersTable + " WHERE is_deleted = 0"
+	rows, err := u.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var temp models.User
+		if err := rows.Scan(&temp.Id, &temp.Login, &temp.Role, &temp.Banned, &temp.Owner, &temp.KeysGenerated, &temp.KeysActivated); err != nil {
+			return nil, err
+		}
+		data = append(data, temp)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (u *UsersSql) GetUsers(userID int) ([]models.User, error) {
 	users := []models.User{}
 	var query string
@@ -102,9 +128,9 @@ func (u *UsersSql) GetUsers(userID int) ([]models.User, error) {
 		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated FROM %s WHERE is_deleted = 0",
 			usersTable)
 	case models.Distributors, models.Reseller:
-		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated  FROM %s WHERE owner = '%s' and is_deleted = 0",
+		query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated  FROM %s WHERE (owner = '%s' or login = '%s') and is_deleted = 0",
 			usersTable,
-			user.Login)
+			user.Login, user.Login)
 	default:
 		return nil, errors.New("bad role")
 	}
@@ -132,7 +158,9 @@ func (u *UsersSql) GetUsers(userID int) ([]models.User, error) {
 
 	if user.Role == models.Distributors {
 		for _, x := range users {
-
+			if user.Login == x.Login {
+				continue
+			}
 			query = fmt.Sprintf("SELECT id,login,role,banned,owner,key_generated,key_activated  FROM %s WHERE owner = '%s' and is_deleted = 0",
 				usersTable,
 				x.Login)

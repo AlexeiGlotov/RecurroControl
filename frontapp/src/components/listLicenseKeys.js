@@ -10,7 +10,7 @@ import {AuthContext} from "./AuthContext";
 
 function ListLicenseKeys() {
     const {role } = useContext(AuthContext);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true);
     const [licenseKeys, setLicenseKeys] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [filter, setFilter] = useState('');
@@ -18,6 +18,7 @@ function ListLicenseKeys() {
 
     useEffect(() => {
         const fetchLicenseKeys = async () => {
+            setLicenseKeys([])
             try {
                 const response = await axiosInstanceWithJWT.get(`api/license-keys/?page=${currentPage}&query=${serverFilter}`)
                 setLicenseKeys(response.data.keys);
@@ -45,10 +46,6 @@ function ListLicenseKeys() {
 
     }, [currentPage,serverFilter]);
 
-
-    if (loading) {
-        return <div>Loading...</div>;
-    }
 
     const handlePrevPage = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -153,7 +150,7 @@ function ListLicenseKeys() {
                             type="text"
                             value={filter}
                             onChange={handleFilterChange}
-                            placeholder="client filter"
+                            placeholder="client filter | Example : any word"
                         />
 
                         <Form.Control
@@ -161,7 +158,7 @@ function ListLicenseKeys() {
                             type="text"
                             value={serverFilter}
                             onChange={handleServerFilterChange}
-                            placeholder="server filter"
+                            placeholder="server filter | Example : sql syntax - banned = 1"
                         />
 
                         <Pagination>
@@ -185,6 +182,8 @@ function ListLicenseKeys() {
                                 <th>Date of Activation</th>
                                 <th>HWID</th>
                                 <th>HWIDK</th>
+                                <th>notes</th>
+                                <th>ban</th>
                                 <th>Action</th>
 
                             </tr>
@@ -203,37 +202,58 @@ function ListLicenseKeys() {
                                     <td>{key.date_activation}</td>
                                     <td style={cellStyle}>{key.hwid}</td>
                                     <td style={cellStyle}>{key.hwidk}</td>
+                                    <td style={cellStyle}>{key.notes}</td>
+                                    <td>{key.banned}</td>
                                     <td>
                                         <Button onClick={() => handleResetHWID(key.id, 0)}
-                                                disabled={key.hwid === null && key.hwidk === null} variant="primary"
+                                                disabled={key.hwid === null && key.hwidk === null}
+                                                variant="outline-primary"
                                                 className="me-2"><i
                                             className="bi bi-server"></i></Button>
 
                                         {(role === 'admin' || role === 'reseller' || role === 'distributors') && (
                                             <>
-                                            {key.banned === 1 ? (
-                                                <Button onClick={() => handleBanUnbanUser(key.id, 0)} variant="primary"
-                                                        className="me-2"><i
-                                                    className="bi bi-unlock-fill"></i></Button>
-                                            ) : (
-                                                <Button onClick={() => handleBanUnbanUser(key.id, 1)} variant="primary"
-                                                        className="me-2"><i
-                                                    className="bi bi-lock-fill"></i></Button>
-                                            )}
+                                                {key.banned === 1 ? (
+                                                    <Button
+                                                        onClick={() => handleBanUnbanUser(key.id, 0)}
+                                                        variant="outline-danger"
+                                                        className="me-2"
+                                                    >
+                                                        <i className="bi bi-lock-fill"></i>
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        onClick={() => handleBanUnbanUser(key.id, 1)}
+                                                        variant="outline-success"
+                                                        className="me-2"
+                                                    >
+                                                        <i className="bi bi-unlock-fill"></i>
+                                                    </Button>
+                                                )}
                                             </>
                                         )}
 
                                         {role === 'admin' && (
-                                        <Button onClick={() => handleDeleteUser(key.id)} variant="danger"><i
-                                            className="bi bi-trash"></i></Button>
-                                            )}
+                                            <Button onClick={() => handleDeleteUser(key.id)} variant="outline-danger"><i
+                                                className="bi bi-trash"></i></Button>
+                                        )}
                                     </td>
                                 </tr>
                             ))
                             ) : (
-                                <tr>
-                                    <td colSpan="11">No keys available</td>
-                                </tr>
+                                <>
+                                    {
+                                        isLoading ? (
+                                            <tr>
+                                                <td colSpan="12">Loading.....</td>
+                                            </tr>
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="12">No keys available</td>
+                                            </tr>
+                                        )
+                                    }
+                                </>
                             )}
                             </tbody>
                         </Table>

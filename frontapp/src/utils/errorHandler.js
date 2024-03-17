@@ -28,6 +28,9 @@ const handleError = (error) => {
             case "enter another login":
                 toast.error("enter another login");
                 break
+            case "limit keys":
+                toast.error("limit keys");
+                break
             default:
                 toast.error("server error");
         }

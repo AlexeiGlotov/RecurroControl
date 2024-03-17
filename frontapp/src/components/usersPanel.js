@@ -73,7 +73,7 @@ function ManagePanelUsers() {
         <div>
             <Container className="my-4">
                 <Card className="p-3">
-                    <Table striped bordered hover> {/* Измененный стиль таблицы */}
+                    <Table striped bordered hover>
                         <thead>
                         <tr>
                             {role === 'admin' && (
@@ -103,18 +103,18 @@ function ManagePanelUsers() {
                                         {user.banned === 1 ? (
                                             <Button
                                                 onClick={() => handleBanUnbanUser(user.id, 0)}
-                                                variant="outline-success"
-                                                className="me-2"
-                                            >
-                                                <i className="bi bi-unlock-fill"></i>
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                onClick={() => handleBanUnbanUser(user.id, 1)}
                                                 variant="outline-danger"
                                                 className="me-2"
                                             >
                                                 <i className="bi bi-lock-fill"></i>
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => handleBanUnbanUser(user.id, 1)}
+                                                variant="outline-success"
+                                                className="me-2"
+                                            >
+                                                <i className="bi bi-unlock-fill"></i>
                                             </Button>
                                         )}
 

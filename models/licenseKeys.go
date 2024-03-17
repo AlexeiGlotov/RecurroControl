@@ -5,6 +5,7 @@ type InputCreate struct {
 	TTLCheat  int    `json:"ttl_cheat" binding:"required"`
 	Holder    string `json:"holder" binding:"required"`
 	Cheat     string `json:"cheat" binding:"required"`
+	Notes     string `json:"notes" `
 }
 
 type LicenseKeys struct {
@@ -18,6 +19,7 @@ type LicenseKeys struct {
 	DateActivation *string `json:"date_activation"`
 	HWID           *string `json:"hwid"`
 	HWIDK          *string `json:"hwidk"`
+	Notes          *string `json:"notes"`
 	Banned         int     `json:"banned"`
 	IsDeleted      int     `json:"is_deleted"`
 }

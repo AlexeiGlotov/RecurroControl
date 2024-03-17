@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -44,8 +45,13 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 		return
 	}
 
-	if inputKeys.CountKeys > 50 {
-		newErrorResponse(c, http.StatusBadRequest, err, "maximum 50 keys")
+	if len(inputKeys.Notes) > 256 {
+		newErrorResponse(c, http.StatusBadRequest, err, "max sim 256")
+		return
+	}
+
+	if inputKeys.CountKeys > 5 && user.Role != models.Admin {
+		newErrorResponse(c, http.StatusBadRequest, err, "limit keys")
 		return
 	}
 
@@ -59,6 +65,7 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 		tempLicenseKey.TTLCheat = inputKeys.TTLCheat
 		tempLicenseKey.Cheat = inputKeys.Cheat
 		tempLicenseKey.LicenseKeys = generateUniqueKey()
+		tempLicenseKey.Notes = &inputKeys.Notes
 
 		licenseKeys = append(licenseKeys, tempLicenseKey)
 	}
@@ -102,13 +109,51 @@ func (h *Handler) getLicenseKeys(c *gin.Context) {
 
 	offset := (page - 1) * 100
 
-	keys, err := h.services.LicenseKeys.GetLicenseKeys(user.Login, user.Role, 100, offset, query)
+	usersI, err := h.services.Users.GetHierarchyUsers(user.Login)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	keys, err := h.services.LicenseKeys.GetLicenseKeys(user.Login, user.Role, usersI, 100, offset, query)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
 		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{"keys": keys})
+}
+
+func (h *Handler) getCustomLicenseKeys(c *gin.Context) {
+	userID, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	date, ok := c.GetQuery("date")
+	if !ok {
+		if err != nil {
+			newErrorResponse(c, http.StatusBadRequest, err, "set date query")
+			return
+		}
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	t, err := time.Parse("2006-01-02", date)
+
+	res, err := h.services.LicenseKeys.GetCustomLicenseKeys(user.Login, t)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{"res": res})
+
 }
 
 type inputAction struct {
@@ -137,7 +182,7 @@ func (h *Handler) licenseKeyResetHWID(c *gin.Context) {
 }
 
 func (h *Handler) licenseKeyBan(c *gin.Context) {
-	_, err := getUserId(c)
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
@@ -145,6 +190,17 @@ func (h *Handler) licenseKeyBan(c *gin.Context) {
 	var input inputAction
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	if user.Role == models.Salesman {
+		newErrorResponse(c, http.StatusBadRequest, err, ErrAccessDenied)
 		return
 	}
 
@@ -157,8 +213,46 @@ func (h *Handler) licenseKeyBan(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+type InputData struct {
+	Date string `json:"date" binding:"required"`
+}
+
+func (h *Handler) licenseKeysBanDate(c *gin.Context) {
+	userID, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	var input InputData
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	if user.Role == models.Salesman || user.Role == models.Reseller {
+		newErrorResponse(c, http.StatusBadRequest, err, ErrAccessDenied)
+		return
+	}
+
+	t, err := time.Parse("2006-01-02", input.Date)
+	fmt.Println(t)
+	err = h.services.LicenseKeys.BanOfDate(user.Login, t)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
 func (h *Handler) licenseKeyUnban(c *gin.Context) {
-	_, err := getUserId(c)
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
@@ -166,6 +260,17 @@ func (h *Handler) licenseKeyUnban(c *gin.Context) {
 	var input inputAction
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	if user.Role == models.Salesman {
+		newErrorResponse(c, http.StatusBadRequest, err, ErrAccessDenied)
 		return
 	}
 
@@ -179,7 +284,7 @@ func (h *Handler) licenseKeyUnban(c *gin.Context) {
 }
 
 func (h *Handler) licenseKeyDelete(c *gin.Context) {
-	_, err := getUserId(c)
+	userID, err := getUserId(c)
 	if err != nil {
 		return
 	}
@@ -187,6 +292,17 @@ func (h *Handler) licenseKeyDelete(c *gin.Context) {
 	var input inputAction
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err, ErrNotFields)
+		return
+	}
+
+	user, err := h.services.Users.GetUser(userID)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err, ErrServerError)
+		return
+	}
+
+	if user.Role != models.Admin {
+		newErrorResponse(c, http.StatusBadRequest, err, ErrAccessDenied)
 		return
 	}
 
