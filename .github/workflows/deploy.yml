@@ -25,6 +25,12 @@ jobs:
               cd /root/app/backapp && \
               docker compose down && \
               rm -r /root/app/backapp; \
+              DANG_IMG=$(docker images -f \"dangling=true\" -q) && \
+              if [ -n \"$DANG_IMG\" ]; then \
+                  docker rmi $DANG_IMG; \
+              else \
+                  echo 'No dangling images to remove.'; \
+              fi; \
           else \
               echo 'Directory /root/app/backapp does not exist, creating it'; \
               mkdir -p /root/app/backapp; \
