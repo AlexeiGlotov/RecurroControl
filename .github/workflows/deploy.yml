@@ -18,13 +18,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Stop docker, delete app, create temp env if directory exists
+      - name: Stop docker, delete app, create temp env, if directory exists, docker rmi
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "\
           if [ -d /root/app/backapp ]; then \
               cd /root/app/backapp && \
               docker compose down && \
-              rm -r /root/app/backapp; \
+              rm -r /root/app/backapp \
+              docker rmi $(docker images -f "dangling=true" -q); \
           else \
               echo 'Directory /root/app/backapp does not exist, creating it'; \
               mkdir -p /root/app/backapp; \
