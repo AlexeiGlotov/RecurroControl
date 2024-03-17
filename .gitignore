@@ -1,3 +1,4 @@
 .env
 changeDatabase
 .idea
+cmd/test
