@@ -18,10 +18,17 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-
-      - name: Stop docker , delete app,create temp env
+      - name: Stop docker, delete app, create temp env if directory exists
         run: |
-          ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "cd /root/app/backapp && touch .env && docker compose down && rm -r /root/app/backapp"
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "\
+          if [ -d /root/app/backapp ]; then \
+              cd /root/app/backapp && \
+              touch .env && \
+              docker compose down && \
+              rm -r /root/app/backapp; \
+          else \
+              echo 'Directory /root/app/backapp does not exist, skipping commands'; \
+          fi"
 
       - name: Copy files to server
         run: |
@@ -43,4 +50,4 @@ jobs:
             ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "\
             cd /root/app/backapp && \
             docker compose ps && \
-            rm .env"
+            truncate -s 0 .env"
