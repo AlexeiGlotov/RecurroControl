@@ -18,7 +18,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Stop docker, delete app, create temp env, if directory exists, docker rmi
+      - name: Stop docker, delete app, if directory exists, docker rmi
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "\
           if [ -d /root/app/backapp ]; then \
