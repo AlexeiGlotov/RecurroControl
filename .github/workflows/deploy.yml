@@ -24,8 +24,8 @@ jobs:
           if [ -d /root/app/backapp ]; then \
               cd /root/app/backapp && \
               docker compose down && \
-              rm -r /root/app/backapp \
-              docker rmi $(docker images -f "dangling=true" -q); \
+              rm -r /root/app/backapp && \
+              docker rmi $(docker images -f \"dangling=true\" -q); \
           else \
               echo 'Directory /root/app/backapp does not exist, creating it'; \
               mkdir -p /root/app/backapp; \
