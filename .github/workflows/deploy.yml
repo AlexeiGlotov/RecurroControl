@@ -23,11 +23,11 @@ jobs:
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} lexa@${{ secrets.SERVER_IP }} "\
           if [ -d /root/app/backapp ]; then \
               cd /root/app/backapp && \
-              touch .env && \
               docker compose down && \
               rm -r /root/app/backapp; \
           else \
-              echo 'Directory /root/app/backapp does not exist, skipping commands'; \
+              echo 'Directory /root/app/backapp does not exist, creating it'; \
+              mkdir -p /root/app/backapp; \
           fi"
 
       - name: Copy files to server
