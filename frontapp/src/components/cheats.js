@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {axiosInstanceWithJWT} from "../api/axios";
-import {toast} from "react-toastify";
 import {Button, Card, Container, Form, Table} from "react-bootstrap";
+import handleError from "../utils/errorHandler";
 
 function Cheats() {
     const [cheats, setCheats] = useState([]);
@@ -15,7 +15,7 @@ function Cheats() {
                 const response = await axiosInstanceWithJWT.get('/api/cheats/');
                 setCheats(response.data.cheats);
             } catch (error) {
-                toast.error(`error: ${error.message}`);
+                handleError(error)
             } finally {
             }
         };
@@ -37,7 +37,7 @@ function Cheats() {
             setCheats(updatedCheats);
         }
         catch(error) {
-            toast.error(`error: ${error.message}`);
+            handleError(error)
         }
         finally {
 
@@ -57,7 +57,7 @@ function Cheats() {
             setCheats(updatedCheats);
         }
         catch(error) {
-            toast.error(`error: ${error.message}`);
+            handleError(error)
         }
         finally {
 
@@ -73,7 +73,7 @@ function Cheats() {
             setCheats([...cheats, addCheat]);
         }
         catch(error) {
-            toast.error(`error: ${error.message}`);
+            handleError(error)
         }
         finally {
 

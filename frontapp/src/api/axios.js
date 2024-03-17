@@ -1,7 +1,7 @@
 // src/api/axios.js
 import axios from 'axios';
+import authEvent from '../components/authEvent';
 
-// Экземпляр Axios для запросов с JWT
 const axiosInstanceWithJWT = axios.create({
     baseURL: process.env.REACT_APP_API_URL
 });
@@ -19,10 +19,18 @@ axiosInstanceWithJWT.interceptors.request.use(
     }
 );
 
-// Экземпляр Axios для запросов без JWT
+axiosInstanceWithJWT.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            authEvent.emit('unauthorized');
+        }
+        return Promise.reject(error);
+    }
+);
+
 const axiosInstanceWithoutJWT = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
-    // Здесь нет необходимости добавлять JWT в заголовки
 });
 
 export { axiosInstanceWithJWT, axiosInstanceWithoutJWT };

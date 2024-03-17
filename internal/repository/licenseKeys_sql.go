@@ -19,25 +19,42 @@ func NewLicenseKeysSql(db *sql.DB) *LicenseKeysSql {
 }
 
 func (l *LicenseKeysSql) CreateLicenseKeys(keys []models.LicenseKeys) error {
-
-	var valueStrings []string
-	var valueArgs []interface{}
-
-	for _, key := range keys {
-		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?)")
-		valueArgs = append(valueArgs, key.LicenseKeys, key.Cheat, key.TTLCheat, key.Holder, key.Creator, key.Notes)
-	}
-
-	stmt := fmt.Sprintf("INSERT INTO"+
-		" %s (license_key, cheat, ttl_cheat, holder, creator,notes) VALUES %s",
-		licenseKeysTable, strings.Join(valueStrings, ","))
-
-	_, err := l.db.Exec(stmt, valueArgs...)
+	// Начало транзакции
+	tx, err := l.db.Begin()
 	if err != nil {
 		return err
 	}
 
-	return nil
+	var valueStrings []string
+	var valueArgs []interface{}
+	var login string
+
+	for _, key := range keys {
+		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?)")
+		valueArgs = append(valueArgs, key.LicenseKeys, key.Cheat, key.TTLCheat, key.Holder, key.Creator, key.Notes)
+		login = key.Holder
+	}
+
+	insert := fmt.Sprintf("INSERT INTO %s (license_key, cheat, ttl_cheat, holder, creator, notes) VALUES %s",
+		licenseKeysTable, strings.Join(valueStrings, ","))
+
+	update := fmt.Sprintf("UPDATE %s SET key_generated = key_generated + %d WHERE login = '%s'",
+		usersTable, len(keys), login)
+
+	// Выполнение обновления
+	if _, err := tx.Exec(update); err != nil {
+		tx.Rollback() // Откат в случае ошибки
+		return err
+	}
+
+	// Выполнение вставки
+	if _, err := tx.Exec(insert, valueArgs...); err != nil {
+		tx.Rollback() // Откат в случае ошибки
+		return err
+	}
+
+	// Подтверждение транзакции
+	return tx.Commit()
 }
 
 func (l *LicenseKeysSql) GetLicenseKeys(limit, offset int, filter string) ([]models.LicenseKeys, error) {
@@ -57,8 +74,6 @@ func (l *LicenseKeysSql) GetLicenseKeys(limit, offset int, filter string) ([]mod
 			       banned, is_deleted,notes 
 			FROM license_keys 
 			WHERE %s LIMIT ? OFFSET ?`, filter)
-
-		fmt.Println(query)
 	}
 
 	rows, err = l.db.Query(query, limit, offset)

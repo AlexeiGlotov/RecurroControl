@@ -36,7 +36,7 @@ func (a *AuthSql) CreateUser(user models.SignUpInput) (int, error) {
 func (a *AuthSql) GetUser(username, password string) (models.User, error) {
 	var user models.User
 
-	query := fmt.Sprintf("SELECT id,login,role,banned,owner FROM %s WHERE login=? AND password_hash=?", usersTable)
+	query := fmt.Sprintf("SELECT id,login,role,banned,owner FROM %s WHERE (login=? AND password_hash=?) AND (banned = 0 AND is_deleted = 0) ", usersTable)
 
 	row := a.db.QueryRow(query, username, password).Scan(&user.Id, &user.Login, &user.Role, &user.Banned, &user.Owner)
 

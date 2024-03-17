@@ -33,7 +33,7 @@ func main() {
 	}
 
 	repos := repository2.NewRepository(db)
-	services := service.NewService(repos)
+	services := service.NewService(repos, os.Getenv("SALT_PASSWORD"), os.Getenv("SALT_JWT"))
 	handlers := handler.NewHandler(services)
 
 	srv := new(todo.Server)

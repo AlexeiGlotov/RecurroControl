@@ -13,13 +13,13 @@ import (
 )
 
 const (
-	salt      = "dqwdqwdqwf12f432"
-	signinKey = "dqwfqwf213122e1d121"
-	tokenTTL  = 12 * time.Hour
+	tokenTTL = time.Hour * 6
 )
 
 type AuthService struct {
-	repo repository.Authorization
+	repo         repository.Authorization
+	SaltPassword string
+	SaltJWT      string
 }
 
 type tokenClaims struct {
@@ -28,8 +28,8 @@ type tokenClaims struct {
 	Role   string
 }
 
-func NewAuthService(repo repository.Authorization) *AuthService {
-	return &AuthService{repo: repo}
+func NewAuthService(repo repository.Authorization, saltPassword, saltJWT string) *AuthService {
+	return &AuthService{repo: repo, SaltPassword: saltPassword, SaltJWT: saltJWT}
 }
 
 func (s *AuthService) ParseToken(accessToken string) (int, error) {
@@ -37,7 +37,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
-		return []byte(signinKey), nil
+		return []byte(s.SaltJWT), nil
 	})
 	if err != nil {
 		return 0, err
@@ -52,7 +52,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 }
 
 func (s *AuthService) GenerateToken(username, password string) (string, error) {
-	user, err := s.repo.GetUser(username, genereatePasswordHash(password))
+	user, err := s.repo.GetUser(username, genereatePasswordHash(password, s.SaltPassword))
 	if err != nil {
 		return "", fmt.Errorf("not user or bad password %w", err)
 	}
@@ -65,14 +65,14 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 		user.Id,
 		user.Role,
 	})
-	return token.SignedString([]byte(signinKey))
+	return token.SignedString([]byte(s.SaltJWT))
 }
 
 func (s *AuthService) CreateUser(user models.SignUpInput) (int, error) {
-	user.Password = genereatePasswordHash(user.Password)
+	user.Password = genereatePasswordHash(user.Password, s.SaltPassword)
 	return s.repo.CreateUser(user)
 }
-func genereatePasswordHash(password string) string {
+func genereatePasswordHash(password string, salt string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))

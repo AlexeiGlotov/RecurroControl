@@ -32,25 +32,30 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		return
 	}
 
+	userInfo, err := h.services.Users.GetUser(user)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, err, "userInfo error")
+		return
+	}
+
+	if userInfo.Banned == 1 || userInfo.IsDeleted == 1 {
+		newErrorResponse(c, http.StatusUnauthorized, err, "block or delete")
+		return
+	}
+
 	c.Set(userCtx, user)
 }
 
 func getUserId(c *gin.Context) (int, error) {
 	id, ok := c.Get(userCtx)
 	if !ok {
-		newErrorResponse(c,
-			http.StatusInternalServerError,
-			errors.New("TOKEN - USER ID NOT FOUND"),
-			"user id not found")
+		newErrorResponse(c, http.StatusInternalServerError, errors.New("TOKEN - USER ID NOT FOUND"), "user id not found")
 		return 0, errors.New("user id not found")
 	}
 
 	userID, ok := id.(int)
 	if !ok {
-		newErrorResponse(c,
-			http.StatusInternalServerError,
-			errors.New("TOKEN - USER ID INVALID TYPE"),
-			"user id is of invalid type")
+		newErrorResponse(c, http.StatusInternalServerError, errors.New("TOKEN - USER ID INVALID TYPE"), "user id is of invalid type")
 		return 0, errors.New("user id not found")
 	}
 	return userID, nil

@@ -1,8 +1,12 @@
 package handler
 
 import (
+	"errors"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
+	"net/http"
+	"time"
 
 	"RecurroControl/internal/service"
 )
@@ -15,6 +19,28 @@ func NewHandler(services *service.Service) *Handler {
 	return &Handler{services: services}
 }
 
+var limiterMap = make(map[string]*rate.Limiter)
+
+func getLimiter(ip string) *rate.Limiter {
+	if limiter, exists := limiterMap[ip]; exists {
+		return limiter
+	}
+	limiter := rate.NewLimiter(rate.Every(1*time.Second), 3)
+	limiterMap[ip] = limiter
+	return limiter
+}
+
+func rateLimitMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		limiter := getLimiter(c.ClientIP())
+		if !limiter.Allow() {
+			newErrorResponse(c, http.StatusTooManyRequests, errors.New("TooManyRequests rateLimit"), "TooManyRequests")
+			return
+		}
+		c.Next()
+	}
+}
+
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
@@ -25,6 +51,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		AllowCredentials: true,
 		AllowAllOrigins:  true,
 	}))
+
+	router.Use(rateLimitMiddleware())
 
 	auth := router.Group("/auth")
 	{

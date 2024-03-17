@@ -53,9 +53,9 @@ type Service struct {
 	LicenseKeys
 }
 
-func NewService(repos *repository.Repository) *Service {
+func NewService(repos *repository.Repository, saltPassword, saltJWT string) *Service {
 	return &Service{
-		Authorization: NewAuthService(repos.Authorization),
+		Authorization: NewAuthService(repos.Authorization, saltPassword, saltJWT),
 		AccessKeys:    NewAdmissionService(repos.AccessKeys),
 		Cheats:        NewCheatService(repos.Cheats),
 		Users:         NewUsersService(repos.Users),

@@ -1,9 +1,8 @@
 
 import {axiosInstanceWithJWT} from '../api/axios';
 import React, {useState, useEffect, useContext} from 'react';
-import {toast} from "react-toastify";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import handleError from '../utils/errorHandler';
 import { Button, Form, Table, Pagination,Container,Card } from 'react-bootstrap';
 import {AuthContext} from "./AuthContext";
 
@@ -22,14 +21,8 @@ function ListLicenseKeys() {
             try {
                 const response = await axiosInstanceWithJWT.get(`api/license-keys/?page=${currentPage}&query=${serverFilter}`)
                 setLicenseKeys(response.data.keys);
-                console.log(licenseKeys)
             } catch (error) {
-                if (error.response.data.message === "bad page"){
-                    toast.error(`no filter results`);
-                }
-                else{
-                    toast.error(`error: ${error.message}`);
-                }
+                handleError(error)
 
             } finally {
                 setLoading(false);
@@ -85,7 +78,7 @@ function ListLicenseKeys() {
                 key.id === userId ? { ...key, is_deleted: 1 } : key));
         }
         catch(error) {
-            toast.error(`error: ${error.message}`);
+            handleError(error)
         }
         finally {
 
@@ -100,7 +93,7 @@ function ListLicenseKeys() {
                     key.id === userId ? { ...key, banned: 0 } : key));
             }
             catch(error) {
-                toast.error(`error: ${error.message}`);
+                handleError(error)
             }
             finally {
 
@@ -112,7 +105,7 @@ function ListLicenseKeys() {
                     key.id === userId ? { ...key, banned: 1 } : key));
             }
             catch(error) {
-                toast.error(`error: ${error.message}`);
+                handleError(error)
             }
             finally {
             }
@@ -126,7 +119,7 @@ function ListLicenseKeys() {
                 key.id === userId ? { ...key, hwid: null,hwidk:null } : key));
         }
         catch(error) {
-            toast.error(`error: ${error.message}`);
+            handleError(error)
         }
         finally {
 

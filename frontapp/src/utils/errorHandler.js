@@ -31,6 +31,12 @@ const handleError = (error) => {
             case "limit keys":
                 toast.error("limit keys");
                 break
+            case "bad page":
+                toast.error("max page");
+                break
+            case "TooManyRequests":
+                toast.error("ANTI-DDOS");
+                break
             default:
                 toast.error("server error");
         }
