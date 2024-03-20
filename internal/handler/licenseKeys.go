@@ -50,7 +50,12 @@ func (h *Handler) createLicenseKeys(c *gin.Context) {
 		return
 	}
 
-	if inputKeys.CountKeys > 5 && user.Role != models.Admin {
+	if inputKeys.CountKeys > 500 && user.Role != models.Admin {
+		newErrorResponse(c, http.StatusBadRequest, err, "limit keys")
+		return
+	}
+
+	if inputKeys.TTLCheat > 24 && user.Role != models.Admin {
 		newErrorResponse(c, http.StatusBadRequest, err, "limit keys")
 		return
 	}

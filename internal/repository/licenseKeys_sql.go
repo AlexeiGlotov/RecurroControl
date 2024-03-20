@@ -67,13 +67,13 @@ func (l *LicenseKeysSql) GetLicenseKeys(limit, offset int, filter string) ([]mod
 		query = fmt.Sprintf(`
 			SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation,hwid, hwidk, 
 			       banned, is_deleted,notes 
-			FROM license_keys LIMIT ? OFFSET ?`)
+			FROM license_keys ORDER BY date_creation DESC LIMIT ? OFFSET ?`)
 	} else {
 		query = fmt.Sprintf(`
 			SELECT id, license_key, cheat, ttl_cheat, holder, creator, date_creation, date_activation,hwid, hwidk, 
 			       banned, is_deleted,notes 
 			FROM license_keys 
-			WHERE %s LIMIT ? OFFSET ?`, filter)
+			WHERE %s ORDER BY date_creation DESC LIMIT ? OFFSET ?`, filter)
 	}
 
 	rows, err = l.db.Query(query, limit, offset)
